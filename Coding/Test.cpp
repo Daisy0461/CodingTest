@@ -2,26 +2,33 @@
 
 using namespace std;
 
-int n, minResult = 987654321;		//인구수
+int n, minResult = 987654321;
 int tempIndex, tempSum;
 int visited[20];
-vector<int> pops;
-vector<vector<int>> links(20);
+vector<int> populars;
 vector<int> Sums;
+vector<vector<int>> Links(20);
 
-void FindLinks(int vilage, int bit)
+void FindLink(int vilage, bool isOn)
 {
 	visited[vilage] = 1;
-	tempSum += pops[vilage];
+	tempSum += populars[vilage];
 
-	for (int i : links[vilage]) {
+	for (int i : Links[vilage]) {
+		//cout << "In i:  " << i << "\n";
 		if (visited[i]) continue;
 
-		if ((tempIndex & (1 << (i - 1))) == bit) {		//현재 bit와 동일하다면
-			FindLinks(i, bit);
+		//if((temp & (1<<i)) == 1)로 하면 안되네.. 이게 1이 아니라 2든 4든 8이든 될 수가 있어서 안됐구나
+
+		if (isOn && (tempIndex & (1 << i))) {
+			//cout << "On Find Link Vilage : " << i << "\n";
+			FindLink(i, isOn);
+		}
+		else if (!isOn && !(tempIndex & (1 << i))) {
+			//cout << "Off Find Link Vilage : " << i << "\n";
+			FindLink(i, isOn);
 		}
 	}
-
 }
 
 int main()
@@ -31,48 +38,60 @@ int main()
 
 	cin >> n;
 
-	pops.push_back(0);		//마을이 1부터 시작해서 처음에 push_back함.
-	int pop = 0;
-	for (int i = 1; i <= n; i++) {				//1번마을부터 인구수를 입력받는다.
+	int pop;
+	for (int i = 0; i < n; i++) {				//인구 수 입력
 		cin >> pop;
-		pops.push_back(pop);
+		populars.push_back(pop);
 	}
-	int in;
-	int link;
-	for (int i = 1; i <= n; i++) {
-		cin >> in;
-		for (int j = 0; j < in; j++) {
+
+	int linkNum;
+	for (int i = 0; i < n; i++) {						//link확인 & 잘들어가는 것 확인 완료
+		cin >> linkNum;
+		int link;
+		for (int j = 0; j < linkNum; j++) {
 			cin >> link;
-			links[i].push_back(link);			//i마을이 link로 들어온 마을과 연결되어있다.
+			Links[i].push_back(link - 1);			//link - 1을 해줘야한다. 만약 link가 1이면 0번째 비트와 비교해서 계산할 것이기 때문이다.
 		}
 	}
 
-	for (int i = 1; i < (1 << n) - 1; i++) {
-		cout << "i : " << i << "   ";
+	for (int i = 1; i < ((1 << n) - 1); i++) {
 		fill(&visited[0], &visited[0] + 20, 0);
 		Sums.clear();
-		tempIndex = i;
-		tempSum = 0;
+		tempIndex = i; tempSum = 0;
+		//cout << "i : " << tempIndex << "\n";
+		
+		for (int j = 0; j < n; j++) {
+			if (visited[j]) continue;
 
-		for (int j = 0; j < n; j++) {		//비트 체크는 0번부터한다이
-			if (visited[j + 1]) continue;		//j+1마을을 들렸다면 
-
-			if (i & (1 << j)) {
-				FindLinks(j + 1, 1);
+			tempSum = 0;
+			if ((tempIndex & (1 << j)) == 0) {		//비트가 꺼져있다면
+				//cout << "Bit Off Start Vilage : " << j << "\n";
+				FindLink(j, false);
 				Sums.push_back(tempSum);
 			}
 			else {
-				FindLinks(j + 1, 0);
+				//cout << "Bit On Start Vilage : " << j << "\n";
+				FindLink(j, true);
 				Sums.push_back(tempSum);
 			}
 		}
 
 		if (Sums.size() == 2) {
-			cout << "minResult : " << abs(Sums[0] - Sums[1]);
-			minResult = min(minResult, abs(Sums[0] - Sums[1]));
+			int tempSumsResult = abs(Sums[0] - Sums[1]);
+			//cout << "Sums[0] : " << Sums[0] << "  Sums[1] : " << Sums[1] << "\n";
+			//cout << "Sum Sub Result : " << tempSumsResult;
+		
+			minResult = min(minResult, tempSumsResult);
 		}
-		cout << "\n";
+		else {
+			//cout << "Sums Size : " << Sums.size();
+		}
+		//cout << "\n";
 	}
 
-	cout << minResult;
+	if (minResult == 987654321) {
+		cout << -1;
+	}else{
+		cout << minResult;
+	}
 }
