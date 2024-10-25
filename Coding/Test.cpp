@@ -2,156 +2,102 @@
 
 using namespace std;
 
-int n, l, result = 0;		//l은 경사로의 가로 길이, 경사로의 높이는 항상 1
-vector<vector<int>> v(101);
-vector<vector<int>> vr(101);
+//1-왼쪽, 2-위쪽, 4-오른쪽, 8-아래가 막혀있다는 의미임.
+//i=0 왼쪽, 1- 위쪽, 2-오른쪽, 3-아래
+//문제는 옆방?
+
+
+int n, m;
+int roomCount = 0, maxRoom = 0, maxSumRoom = 0, room=0;
+int visited[51][51];
+vector<vector<int>> castle(51);
+vector<int> rooms;
+int dy[] = { 0, -1, 0, 1 };
+int dx[] = { -1, 0, 1, 0 };
+
+void dfs(int y, int x) {
+	room++;
+	visited[y][x] = roomCount;
+
+	//cout << "Start y : " << y << "  x: " << x  <<  "  castle Num : "<< castle[y][x] << "\n";
+	for (int i = 0; i < 4; i++) {
+		if (castle[y][x] & (1 << i)) continue;	//비트가 켜져있으면 막혀있다.
+		//cout <<  "is not block i : " << i+1 << "\n";
+		//안막혀있다면
+		int ny = y + dy[i];
+		int nx = x + dx[i];
+		
+
+		if (ny < 0 || nx < 0 || ny >= m || nx >= n) continue;
+		if (visited[ny][nx]) continue;
+		//cout << "ny : " << ny << "  nx: " << nx << "\n";
+		dfs(ny, nx);
+	}
+}
 
 int main()
 {
 	ios_base::sync_with_stdio(0);
 	cin.tie(0); cout.tie(0);
 
-	cin >> n >> l;
+	cin >> n >> m;
 
-	int height;
-	for (int i = 0; i < n; i++) {
+	int temp;
+	for (int i = 0; i < m; i++) {
 		for (int j = 0; j < n; j++) {
-			cin >> height;
-			v[i].push_back(height);
-			vr[j].push_back(height);
+			cin >> temp;
+			castle[i].push_back(temp);
 		}
 	}
 
-	//cout << "Reverse Print\n";
-	//for (int i = 0; i < n; i++) {
-	//	for (int j : vr[i]) {
-	//		cout << j << " ";
+	rooms.push_back(0);
+	for (int i = 0; i < m; i++) {
+		for (int j = 0; j < n; j++) {
+			if (visited[i][j]) continue;
+			room = 0;
+			roomCount++;
+			dfs(i, j);
+			//cout << "End Room \n";
+			rooms.push_back(room);
+			maxRoom = max(maxRoom, room);
+		}
+	}
+
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < m; j++) {
+			if (i + 1 < n) {		//i+1이 범위 안에 있어야 비교가 가능하다.
+				if (visited[i][j] != visited[i + 1][j]) {	//ij와 i+j의 방의 넘버가 다르다.
+					maxSumRoom = max(maxSumRoom,
+						rooms[visited[i + 1][j]] + rooms[visited[i][j]]);
+				}
+			}
+
+			if (j + 1 < m) {
+				if (visited[i][j + 1] != visited[i][j]) {
+					maxSumRoom = max(maxSumRoom,
+						rooms[visited[i][j]] + rooms[visited[i][j + 1]]);
+				}
+			}
+		}
+	}
+
+	//for (int i = 0; i < m; i++) {
+	//	for (int j = 0; j < n; j++) {
+	//		for (int k = 0; k < 4; k++) {
+	//			if (castle[i][j] & (1 << k)) {		//방의 k쪽 벽이 있다.
+	//				int ny = i + dy[i];
+	//				int nx = j + dx[j];
+
+	//				if (ny < 0 || nx < 0 || ny >= m || nx >= n) continue;
+
+	//				if (visited[i][j] != visited[ny][nx]) {
+	//					maxSumRoom = max(maxSumRoom, rooms[visited[i][j]] + rooms[visited[ny][nx]]);
+	//				}
+	//			}
+	//		}
 	//	}
-	//	cout << "\n";
 	//}
 
-	for (int i = 0; i < n; i++) {
-		int sameCount = 0;
-		int beforeHeight = 0;		//0이면 처음이다. L이 1부터 시작이기에
-		int j = 0;
-		//cout << "i : " << i;
-		for (j = 0; j < n; j++) {
-			int currentHeight = v[i][j];
-
-			if (beforeHeight == 0) {		//처음 넣어주기
-				sameCount++;
-				beforeHeight = currentHeight;
-				continue;
-			}
-
-			if (beforeHeight == v[i][j]) {		//현재 높이와 같다면
-
-				sameCount++;
-			}
-			else {		//beforeHeight != j
-				int subResult = beforeHeight - currentHeight;
-				if (abs(subResult) > 1) break;	//차이가 1보다 크면 이미 경사로 못 놓음.
-					
-
-				if (subResult == -1) {		//즉 지금 높이가 이전보다 1 높다.
-					if (sameCount < l) break;	//sameCount가 경사로의 가로보다 작으면 경사로 못 놓음.
-					sameCount = 1;
-					beforeHeight = currentHeight;
-				}
-				else if (subResult == 1) {		//지금 높이가 이전보다 1낮다.
-					if (j + l - 1 >= n) {	//n보다 크면 못놓는다. 넘어간다.
-						j = n + 1;
-						continue;
-					}
-
-					bool can = true;
-					for (int k = 1; k <= l - 1; k++) {
-						if (v[i][j + k] == currentHeight) {
-							continue;
-						}
-						else {
-							can = false;
-						}
-					}
-
-					if (!can) break;
-
-					j = j + l - 1;
-					sameCount = 0;			//초기로 돌린다.
-					beforeHeight = currentHeight;
-				}
-			}
-		}
-
-		if (j == n) {
-			//cout << " is result ++ \n";
-			result++;
-		}
-		else {
-			//cout << "\n";
-		}
-	}
-
-	//cout << "Reverse \n";
-	for (int i = 0; i < n; i++) {
-		//cout << "i : " << i;
-		int sameCount = 0;
-		int beforeHeight = 0;		//0이면 처음이다. L이 1부터 시작이기에
-		int j = 0;
-		for (j = 0; j < n; j++) {
-			int currentHeight = vr[i][j];
-
-			if (beforeHeight == 0) {		//처음 넣어주기
-				sameCount++;
-				beforeHeight = currentHeight;
-				continue;
-			}
-
-			if (beforeHeight == vr[i][j]) {		//현재 높이와 같다면
-				sameCount++;
-			}
-			else {		//beforeHeight != j
-				int subResult = beforeHeight - currentHeight;
-				if (abs(subResult) > 1) break;	//차이가 1보다 크면 이미 경사로 못 놓음.
-
-
-				if (subResult == -1) {		//즉 지금 높이가 이전보다 1 높다.
-					if (sameCount < l) break;	//sameCount가 경사로의 가로보다 작으면 경사로 못 놓음.
-					sameCount = 1;
-					beforeHeight = currentHeight;
-				}
-				else if (subResult == 1) {		//지금 높이가 이전보다 1낮다.
-					if (j + l - 1 >= n) break;		//n보다 크면 못놓는다. 넘어간다.
-
-					bool can = true;
-					for (int k = 1; k <= l - 1; k++) {
-						if (vr[i][j + k] == currentHeight) {
-							continue;
-						}
-						else {
-							can = false;
-						}
-					}
-
-					if (!can) break;
-
-					j = j + l - 1;
-					sameCount = 0;			//초기로 돌린다.
-					beforeHeight = currentHeight;
-				}
-			}
-		}
-
-		if (j == n) {
-			//cout << " is result ++ \n";
-			result++;
-		}
-		else {
-			//cout << "\n";
-		}
-	}
-
-	cout << result;
-
+	cout << roomCount << "\n" << maxRoom << "\n" << maxSumRoom;
 
 }

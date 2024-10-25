@@ -31,8 +31,7 @@
               "ViewState": "AgIAAEIHAAAAAAAAAAAUwGQHAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
               "WhenOpened": "2024-10-22T07:12:33.565Z",
-              "IsPinned": true,
-              "EditorCaption": ""
+              "IsPinned": true
             },
             {
               "$type": "Bookmark",
@@ -44,7 +43,7 @@
               "Title": "vector",
               "DocumentMoniker": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.34.31933\\include\\vector",
               "ToolTip": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.34.31933\\include\\vector",
-              "ViewState": "AgIAAHYHAAAAAAAAAAAUwJsHAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAH8HAAAAAAAAAAAUwJsHAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
               "WhenOpened": "2024-10-23T17:06:27.711Z",
               "EditorCaption": ""
@@ -55,9 +54,9 @@
               "Title": "Test.cpp",
               "DocumentMoniker": "D:\\CodingTest\\Coding\\Test.cpp",
               "RelativeDocumentMoniker": "Test.cpp",
-              "ToolTip": "D:\\CodingTest\\Coding\\Test.cpp",
-              "RelativeToolTip": "Test.cpp",
-              "ViewState": "AgIAADAAAAAAAAAAAAAAAE4AAAAVAAAAAAAAAA==",
+              "ToolTip": "D:\\CodingTest\\Coding\\Test.cpp*",
+              "RelativeToolTip": "Test.cpp*",
+              "ViewState": "AgIAACMAAAAAAAAAAAAywFIAAAAsAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2024-10-23T16:09:48.064Z",
               "EditorCaption": ""
