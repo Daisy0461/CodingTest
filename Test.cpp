@@ -2,85 +2,29 @@
 
 using namespace std;
 
-bool bIsFindResult = false;
-int bodingNum;
-int usedNum[10];
-vector<int> result;
-vector<bool> vIsFindBigger;
+//상태가 2가지라고 생각할 수도 있겠다.
+//0은 세로로 잘리는 상태, 1은 가로로 잘리는 상태.
 
-void FindResult(int num, int index)
-{
-	usedNum[num] = 1;
-	if (index == bodingNum && bIsFindResult == false) {
-		//cout << "Find Result \n";
-		for (int i : result) {
-			cout << i;
-		}
-		cout << "\n";
+int n, m;		//n과 m의 최댓값은 4이다.
+vector<vector<char>> v;
 
-		bIsFindResult = true;
-		return;
-	}
-
-	if (bIsFindResult) return;
-
-	if (vIsFindBigger[index]) {		//지금 num보다 더 큰 값을 찾는다.
-		for (int i = num + 1; i < 10; i++) {
-			if (usedNum[i]) continue;
-
-			result.push_back(i);
-			FindResult(i, index + 1);
-			result.pop_back();
-		}
-	}
-	else {
-		for (int i = num - 1; i >= 0; i--) {
-			if (usedNum[i]) continue;
-
-			result.push_back(i);
-			FindResult(i, index + 1);
-			result.pop_back();
-		}
-	}
-
-	usedNum[num] = 0;
-}
 
 int main()
 {
 	ios_base::sync_with_stdio(0);
 	cin.tie(0); cout.tie(0);
 
-	cin >> bodingNum;
+	cin >> n >> m;
 
-	char temp;
-	for (int i = 0; i < bodingNum; i++) {
-		cin >> temp;
-		if (temp == '<') {
-			vIsFindBigger.push_back(true);
-		}
-		else if (temp == '>') {
-			vIsFindBigger.push_back(false);
+	char c;
+	for (int i = 0; i < n; i++) {			//v에 입력된 값 넣기
+		for (int j = 0; j < m; j++) {
+			cin >> c;
+			v[i].push_back(c);
 		}
 	}
 
-	for (int i = 9; i >= 0; i--) {
-		result.push_back(i);
-		FindResult(i, 0);
-		result.pop_back();
+	for (int i = 0; i < (n * m); i++) {
 
-		if (bIsFindResult) break;
-	}
-
-	result.clear();
-	bIsFindResult = false;
-	fill(&usedNum[0], &usedNum[0] + 10, 0);
-
-	for (int i = 0; i < 10; i++) {
-		result.push_back(i);
-		FindResult(i, 0);
-		result.pop_back();
-
-		if (bIsFindResult) break;
 	}
 }
