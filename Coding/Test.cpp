@@ -2,102 +2,75 @@
 
 using namespace std;
 
-//1-왼쪽, 2-위쪽, 4-오른쪽, 8-아래가 막혀있다는 의미임.
-//i=0 왼쪽, 1- 위쪽, 2-오른쪽, 3-아래
-//문제는 옆방?
-
-
-int n, m;
-int roomCount = 0, maxRoom = 0, maxSumRoom = 0, room=0;
-int visited[51][51];
-vector<vector<int>> castle(51);
-vector<int> rooms;
-int dy[] = { 0, -1, 0, 1 };
-int dx[] = { -1, 0, 1, 0 };
-
-void dfs(int y, int x) {
-	room++;
-	visited[y][x] = roomCount;
-
-	//cout << "Start y : " << y << "  x: " << x  <<  "  castle Num : "<< castle[y][x] << "\n";
-	for (int i = 0; i < 4; i++) {
-		if (castle[y][x] & (1 << i)) continue;	//비트가 켜져있으면 막혀있다.
-		//cout <<  "is not block i : " << i+1 << "\n";
-		//안막혀있다면
-		int ny = y + dy[i];
-		int nx = x + dx[i];
-		
-
-		if (ny < 0 || nx < 0 || ny >= m || nx >= n) continue;
-		if (visited[ny][nx]) continue;
-		//cout << "ny : " << ny << "  nx: " << nx << "\n";
-		dfs(ny, nx);
-	}
-}
+string s1, s2;
+vector<int> result;
 
 int main()
 {
 	ios_base::sync_with_stdio(0);
 	cin.tie(0); cout.tie(0);
 
-	cin >> n >> m;
+	cin >> s1 >> s2;
 
-	int temp;
-	for (int i = 0; i < m; i++) {
-		for (int j = 0; j < n; j++) {
-			cin >> temp;
-			castle[i].push_back(temp);
+	int s1Index = s1.size() - 1;
+	int s2Index = s2.size() - 1;
+
+	bool isUp = false;
+	while (s1Index != -1 && s2Index != -1) {
+		int temps1 = s1[s1Index] - '0';
+		int temps2 = s2[s2Index] - '0';
+		int tempSum = temps1 + temps2;
+		if (isUp) {
+			tempSum++;
+			isUp = false;
 		}
+		
+		if (tempSum >= 10) {
+			isUp = true;
+			tempSum -= 10;
+		}
+
+		result.push_back(tempSum);
+
+		s1Index--;
+		s2Index--;
 	}
 
-	rooms.push_back(0);
-	for (int i = 0; i < m; i++) {
-		for (int j = 0; j < n; j++) {
-			if (visited[i][j]) continue;
-			room = 0;
-			roomCount++;
-			dfs(i, j);
-			//cout << "End Room \n";
-			rooms.push_back(room);
-			maxRoom = max(maxRoom, room);
-		}
+	bool iss1End = false;
+	if (s1Index == -1) {
+		iss1End = true;
 	}
 
-	for (int i = 0; i < n; i++) {
-		for (int j = 0; j < m; j++) {
-			if (i + 1 < n) {		//i+1이 범위 안에 있어야 비교가 가능하다.
-				if (visited[i][j] != visited[i + 1][j]) {	//ij와 i+j의 방의 넘버가 다르다.
-					maxSumRoom = max(maxSumRoom,
-						rooms[visited[i + 1][j]] + rooms[visited[i][j]]);
-				}
+	if (iss1End) {
+		while (s2Index != -1) {
+			int temp = s2[s2Index] - '0';
+			if (isUp) {
+				temp++;
+				isUp = false;
 			}
 
-			if (j + 1 < m) {
-				if (visited[i][j + 1] != visited[i][j]) {
-					maxSumRoom = max(maxSumRoom,
-						rooms[visited[i][j]] + rooms[visited[i][j + 1]]);
-				}
+			result.push_back(temp);
+			s2Index--;
+		}
+	}
+	else {
+		while (s1Index != -1) {
+			int temp = s1[s1Index] - '0';
+			if (isUp) {
+				temp++;
+				isUp = false;
 			}
+
+			result.push_back(temp);
+			s1Index--;
 		}
 	}
 
-	//for (int i = 0; i < m; i++) {
-	//	for (int j = 0; j < n; j++) {
-	//		for (int k = 0; k < 4; k++) {
-	//			if (castle[i][j] & (1 << k)) {		//방의 k쪽 벽이 있다.
-	//				int ny = i + dy[i];
-	//				int nx = j + dx[j];
+	if (isUp) {
+		result.push_back(1);
+	}
 
-	//				if (ny < 0 || nx < 0 || ny >= m || nx >= n) continue;
-
-	//				if (visited[i][j] != visited[ny][nx]) {
-	//					maxSumRoom = max(maxSumRoom, rooms[visited[i][j]] + rooms[visited[ny][nx]]);
-	//				}
-	//			}
-	//		}
-	//	}
-	//}
-
-	cout << roomCount << "\n" << maxRoom << "\n" << maxSumRoom;
-
+	for (int i = result.size()-1; i >= 0; i--) {
+		cout << result[i];
+	}
 }
