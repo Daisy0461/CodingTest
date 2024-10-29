@@ -2,75 +2,48 @@
 
 using namespace std;
 
-string s1, s2;
-vector<int> result;
+typedef long long ll;
+
+int n;
+ll result = 0;
+stack<pair<ll, ll>> s;		//s.
 
 int main()
 {
-	ios_base::sync_with_stdio(0);
-	cin.tie(0); cout.tie(0);
+	cin >> n; 
 
-	cin >> s1 >> s2;
-
-	int s1Index = s1.size() - 1;
-	int s2Index = s2.size() - 1;
-
-	bool isUp = false;
-	while (s1Index != -1 && s2Index != -1) {
-		int temps1 = s1[s1Index] - '0';
-		int temps2 = s2[s2Index] - '0';
-		int tempSum = temps1 + temps2;
-		if (isUp) {
-			tempSum++;
-			isUp = false;
-		}
-		
-		if (tempSum >= 10) {
-			isUp = true;
-			tempSum -= 10;
+	int temp;
+	for (int i = 0; i < n; i++) {
+		cin >> temp;
+		int count = 1;
+		if (s.empty()) {
+			s.push({ temp, count });
+			continue;
 		}
 
-		result.push_back(tempSum);
+		if (s.top().first > temp) {			//지금 들어온게 더 작다. 그 말은 이미 stack에 있는 것들은 temp보다 작은 것은 없다.
+			s.push({ temp, count });
+			result++;
+		}
+		else if (s.top().first < temp) {		//지금 들어온게 더 크다.
+			while (!s.empty() && s.top().first < temp) {
+				result += s.top().second;
+				s.pop();
+			}
+			s.push({ temp, count });
+		}
+		else if (s.top().first == temp) {
+			result += s.top().second;
+			count = s.top().second + 1;
+			s.pop();
 
-		s1Index--;
-		s2Index--;
-	}
-
-	bool iss1End = false;
-	if (s1Index == -1) {
-		iss1End = true;
-	}
-
-	if (iss1End) {
-		while (s2Index != -1) {
-			int temp = s2[s2Index] - '0';
-			if (isUp) {
-				temp++;
-				isUp = false;
+			if (!s.empty()) {
+				result += s.top().second;
 			}
 
-			result.push_back(temp);
-			s2Index--;
-		}
-	}
-	else {
-		while (s1Index != -1) {
-			int temp = s1[s1Index] - '0';
-			if (isUp) {
-				temp++;
-				isUp = false;
-			}
-
-			result.push_back(temp);
-			s1Index--;
+			s.push({ temp, count });
 		}
 	}
 
-	if (isUp) {
-		result.push_back(1);
-	}
-
-	for (int i = result.size()-1; i >= 0; i--) {
-		cout << result[i];
-	}
+	cout << result;
 }
