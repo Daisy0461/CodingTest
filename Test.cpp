@@ -2,45 +2,42 @@
 
 using namespace std;
 
+int n;		// 1<= n <= 200000 과제의 개수
+int result = 0;
+priority_queue<pair<int, int>> pq;
+priority_queue<int> pq2;
+
 int main()
 {
-      ios_base::sync_with_stdio(0);
-      cin.tie(0); cout.tie(0);
+	ios_base::sync_with_stdio(0);
+	cin.tie(0); cout.tie(0);
 
-      string s, tnt;
-      cin >> s >> tnt;
+	cin >> n;
 
-      deque<char> result;
-      int tntSize = tnt.size();
+	int d, c;
+	for (int i = 0; i < n; i++) {
+		cin >> d >> c;
+		pq.push({ d, c });			//데드라인이 큰것부터 한다. -> 데드라인이 크면 날짜가 줄어들어도 해결을 한다면 컵라면을 얻을 수 있기 때문이다.
+	}
 
-      for (char ch : s) {
-            result.push_back(ch);               //s에 있는 요소를 순서대로 deque에 넣는다.
+	int maxDate = pq.top().first;
+	while (maxDate) {		//maxDate가 0일때는 하면 안된다. -> 데드라인은 자연수이니까
+		//cout << "maxDate : " << maxDate << "\n";
+		while (pq.size() && pq.top().first == maxDate) {			//pq가 비어있지 않고 데드라인이 현재 maxDate와 같을때
+			pq2.push(pq.top().second);
+			pq.pop();
+		}
 
-            if (result.size() >= tntSize) {
-                  bool match = true;
-                  for (int i = 0; i < tntSize; ++i) {                   //폭발 문자열 크기만큼 돌린다.
-                        if (result[result.size() - tntSize + i] != tnt[i]) {        //result[result의 전체 사이즈 - 폭발 문자열 + i] != tnt[i] -> 즉, 목발문자열의 순서대로 비교하는 것이다. 강의의 erase와 동일한 방법.
-                              match = false;
-                              break;
-                        }
-                  }
+		if (pq2.size()) {			//pq2에 뭔가가 있다면
+			result += pq2.top();
+			//cout << "Now Result : " << result << "\n";
+			pq2.pop();
+		}
 
-                  if (match) {            //폭발윤자열과 동일하다면
-                        for (int i = 0; i < tntSize; ++i) {
-                              result.pop_back();            //해당 개수만큼 deque에서 뺀다.
-                        }
-                  }
-            }
-      }
+		maxDate--;
+	}
 
-      if (result.empty()) {
-            cout << "FRULA";
-      }
-      else {
-            for (char ch : result) {
-                  cout << ch;
-            }
-      }
+	cout << result;
+	//cout << "result : " << result << "\n";
 
-      return 0;
 }
