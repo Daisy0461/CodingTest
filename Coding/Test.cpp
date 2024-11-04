@@ -2,9 +2,9 @@
 
 using namespace std;
 
-int n, result = 0;
-priority_queue<pair<int, int>> pq;		//date, pay
-priority_queue<int> pq2;
+int n;			//진행하는 회의의 수
+int result = 0;
+vector<pair<int, int>> v;
 
 int main()
 {
@@ -13,32 +13,22 @@ int main()
 
 	cin >> n;
 
-	//pay와 date 순으로 주어진다.
-	int p, d;
+	int s, e;		//회의의 시작시간.		시작이간은 -부터 가능 100,000
 	for (int i = 0; i < n; i++) {
-		cin >> p >> d;			//pay가 큰순으로 정리하고 day에 맞춰야한다.
-		pq.push({ d, p });		//d가 큰순으로 정렬된다.
+		cin >> s >> e;
+		v.push_back({ e, s });
 	}
 
-	//day가 작은 순으로 넣어야할 것 같은데.
-	//pay가  큰순으로 정렬하고 뒤에 해도 되는 것(date가 큰 것)을 pq에 넣으면 그 안에 해도 되니까 그런 식으로 진행해보자.
+	sort(v.begin(), v.end());
 
-	int highDate = 0;
-	if (!pq.empty()) {
-		highDate = pq.top().first;
-	}
-	for (int i = highDate; i > 0; i--) {
-		while (!pq.empty() && pq.top().first == i) {
-			pq2.push(pq.top().second);			//pay가 큰 순으로 정렬된다.
-			pq.pop();
-		}
-
-		if (!pq2.empty()) {
-			result += pq2.top();
-			pq2.pop();
+	int e1 = v[0].first;				//v[0]이 end가 가장 빠른 위치이다.	
+	result++;
+	for (int i = 1; i < n; i++) {
+		if (v[i].second >= e1) {			//다음 요소의 시작시간이 현재의 끝나는 시간보다 크거나 같다. 
+			e1 = v[i].first;					//끝나는 시간이 빠른 순으로 정렬했기 때문에 지금 이게 가장 끝나느게 빠른 요소이다.
+			result++;
 		}
 	}
 
 	cout << result;
-
 }
