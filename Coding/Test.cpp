@@ -2,33 +2,49 @@
 
 using namespace std;
 
-int n;			//진행하는 회의의 수
-int result = 0;
-vector<pair<int, int>> v;
+typedef long long ll;
+
+int n, k;		//N개의 보석 k개의 가방
+ll result = 0;
+vector<int> vv;
+vector<pair<int, int>> vp;
+priority_queue<int> pq;
 
 int main()
 {
 	ios_base::sync_with_stdio(0);
 	cin.tie(0); cout.tie(0);
 
-	cin >> n;
+	cin >> n >> k;
 
-	int s, e;		//회의의 시작시간.		시작이간은 -부터 가능 100,000
+	int m, v;		//무게와 가격
 	for (int i = 0; i < n; i++) {
-		cin >> s >> e;
-		v.push_back({ e, s });
+		cin >> m >> v;
+		vp.push_back({ m, v });		
 	}
 
-	sort(v.begin(), v.end());
+	int c;
+	for (int i = 0; i < k; i++) {
+		cin >> c;
+		vv.push_back(c);
+	}
 
-	int e1 = v[0].first;				//v[0]이 end가 가장 빠른 위치이다.	
-	result++;
-	for (int i = 1; i < n; i++) {
-		if (v[i].second >= e1) {			//다음 요소의 시작시간이 현재의 끝나는 시간보다 크거나 같다. 
-			e1 = v[i].first;					//끝나는 시간이 빠른 순으로 정렬했기 때문에 지금 이게 가장 끝나느게 빠른 요소이다.
-			result++;
+	sort(vp.begin(), vp.end());			//보석의 무게가  가벼운 순 그리고 가격이 싼 순
+	sort(vv.begin(), vv.end());			//가방을 담을 수 있는 무게가 작은 순으로 정렬한다.
+
+	int vpIndex = 0;
+	for (auto i : vv) {
+		while (vpIndex < n && i >= vp[vpIndex].first) {
+			pq.push(vp[vpIndex].second);
+			vpIndex++;
+		}
+
+		if (pq.size()) {
+			result += pq.top();
+			pq.pop();
 		}
 	}
 
 	cout << result;
+
 }
