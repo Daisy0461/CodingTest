@@ -4,47 +4,78 @@ using namespace std;
 
 typedef long long ll;
 
-int n, k;		//N개의 보석 k개의 가방
-ll result = 0;
-vector<int> vv;
-vector<pair<int, int>> vp;
-priority_queue<int> pq;
+//연속된 소수의 합으로 n을 만들어낸다.
+int n;
+int result = 0;
+vector<int> v;
+
+bool check(int num)
+{
+	if (num == 2 || num == 3) {
+		return true;
+	}
+
+	if (num % 2 == 0) {		//num이 짝수라면 
+		return false;			//소수가 아니다.
+	}
+
+	bool flag = true;
+	for (int i = 3; i * i <= num; i = i + 2) {		
+		if (num % i == 0) {
+			flag = false;
+			break;
+		}
+	}
+
+	return flag;
+}
 
 int main()
 {
 	ios_base::sync_with_stdio(0);
 	cin.tie(0); cout.tie(0);
 
-	cin >> n >> k;
+	cin >> n;
 
-	int m, v;		//무게와 가격
-	for (int i = 0; i < n; i++) {
-		cin >> m >> v;
-		vp.push_back({ m, v });		
+	if (n == 1) {
+		cout << 0;
+		return 0;
+	}
+	else if (n == 2) {
+		cout << 1;
+		return 0;
 	}
 
-	int c;
-	for (int i = 0; i < k; i++) {
-		cin >> c;
-		vv.push_back(c);
-	}
-
-	sort(vp.begin(), vp.end());			//보석의 무게가  가벼운 순 그리고 가격이 싼 순
-	sort(vv.begin(), vv.end());			//가방을 담을 수 있는 무게가 작은 순으로 정렬한다.
-
-	int vpIndex = 0;
-	for (auto i : vv) {
-		while (vpIndex < n && i >= vp[vpIndex].first) {
-			pq.push(vp[vpIndex].second);
-			vpIndex++;
-		}
-
-		if (pq.size()) {
-			result += pq.top();
-			pq.pop();
+	for (int i = 2; i < n; i++) {
+		if (check(i)) {		//i는 소수이다.
+			v.push_back(i);		//sort 불필요.
 		}
 	}
+
+	/*for (int i : v) {
+		cout << i << " ";
+	}*/
+
+	if (check(n)) {
+		result++;
+	}
+
+	int s = 0;
+	while (v[s] <= n/2) {
+		int sum = 0;
+		for (int i = s; i < n; i++) {
+			sum += v[i];
+			if (sum == n) {
+				result++;
+				s++;
+				break;
+			}
+			else if (sum > n) {
+				s++;
+				break;
+			}
+		}
+	 }
 
 	cout << result;
-
 }
