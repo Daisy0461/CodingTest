@@ -8,7 +8,6 @@ vector<pair<int, int>> v;
 int main()
 {
 	cin >> n;
-
 	int arriveTime, checkTime;
 	for (int i = 0; i < n; i++) {
 		cin >> arriveTime >> checkTime;
@@ -21,7 +20,7 @@ int main()
 	int et = v[0].first + v[0].second;
 
 	for (int i = 1; i < n; i++) {
-		if (v[i].first >et) {		//´ÙÀ½ ¿ä¼ÒÀÇ µµÂø½Ã°£ÀÌ ÇöÀç  ³¡³­½Ã°£º¸´Ù Å©´Ù.
+		if (v[i].first >et) {		//ë‹¤ìŒ ìš”ì†Œì˜ ë„ì°©ì‹œê°„ì´ í˜„ì¬  ëë‚œì‹œê°„ë³´ë‹¤ í¬ë‹¤.
 			et = v[i].first + v[i].second;
 		}
 		else {
