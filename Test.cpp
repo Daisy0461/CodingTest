@@ -2,45 +2,52 @@
 
 using namespace std;
 
-typedef long long ll;
-
-int n, x;		//n개의 수열이 주어진다. 수열의 수는 서로 다르다.
-vector<int> v; 
-ll result =0;
+int n, k;
+int INF = 987654321;
+int result = 0;
+int arr[101], visited[101];
+vector<int> v;
 
 int main()
 {
 	ios_base::sync_with_stdio(0);
 	cin.tie(0); cout.tie(0);
 
-	cin >> n;
+	cin >> n >> k;
 
-	int temp;
-	for (int i = 0; i < n; i++) {
-		cin >> temp;
-		v.push_back(temp);
+	for (int i = 0; i < k; i++){
+		cin >> arr[i];
 	}
-	//v는 무조건 size()-1 해도 음수는 아니다.
 
-	sort(v.begin(), v.end());
+	for (int i = 0; i < k; i++) {
+		if (!visited[arr[i]] ) {
+			if (v.size() == n) {			
+				//콘센트에 자리가 없고 현재 콘센트에 꽂혀있지 않은 것이라면
+				int last_Index = 0; int findNum;
+				for (int a : v) {		//v는 현재 콘센트에 꽂혀있는 것을 의미한다. 가장 뒤에 사용할 것을 찾아야한다.
+					int tempIndex = 987654321;
+					for (int j = i + 1; j < k; j++) {
+						if (arr[j] == a) {			//이후에 사용하는 가전제품 중 v에 있는 a와동일한 가전제품을 찾았다면
+							tempIndex = j;
+							break;
+						}
+					}
 
-	cin >> x;
+					if (last_Index < tempIndex) {			//지금까지 나왔던 값들 보다 현재의 가전제품이 제일 뒤에 사용한다.
+						findNum = a;
+						last_Index = tempIndex;
+					}
+				}
 
-	int s = 0, e = v.size() - 1;
-	while (s < e) {
-		int sum = v[s] + v[e];
-		if (sum == x) {
-			result++;
-			s++;
-			e--;
-		}
-		else if(sum > x) {		//합이 크다, 즉 숫자를 줄인다.
-			e--;
-		}
-		else if (sum < x) {
-			s++;
-		}
+				visited[findNum] = 0;
+				v.erase(find(v.begin(), v.end(), findNum));
+				result++;
+			}
+			v.push_back(arr[i]);
+			visited[arr[i]] = 1;
+		}	
 	}
 
 	cout << result;
+
 }
