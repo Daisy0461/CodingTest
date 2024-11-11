@@ -2,31 +2,45 @@
 
 using namespace std;
 
-int n;
-vector<pair<int, int>> v;
+typedef long long ll;
+
+int n, x;		//n개의 수열이 주어진다. 수열의 수는 서로 다르다.
+vector<int> v;
+ll result =0;
 
 int main()
 {
-	cin >> n;
-	int arriveTime, checkTime;
-	for (int i = 0; i < n; i++) {
-		cin >> arriveTime >> checkTime;
+	ios_base::sync_with_stdio(0);
+	cin.tie(0); cout.tie(0);
 
-		v.push_back({ arriveTime, checkTime });
+	cin >> n;
+
+	int temp;
+	for (int i = 0; i < n; i++) {
+		cin >> temp;
+		v.push_back(temp);
 	}
+	//v는 무조건 size()-1 해도 음수는 아니다.
 
 	sort(v.begin(), v.end());
 
-	int et = v[0].first + v[0].second;
+	cin >> x;
 
-	for (int i = 1; i < n; i++) {
-		if (v[i].first >et) {		//다음 요소의 도착시간이 현재  끝난시간보다 크다.
-			et = v[i].first + v[i].second;
+	int s = 0, e = v.size() - 1;
+	while (s < e) {
+		int sum = v[s] + v[e];
+		if (sum == x) {
+			result++;
+			s++;
+			e--;
 		}
-		else {
-			et += v[i].second;
+		else if(sum > x) {		//합이 크다, 즉 숫자를 줄인다.
+			e--;
+		}
+		else if (sum < x) {
+			s++;
 		}
 	}
 
-	cout << et;
+	cout << result;
 }
