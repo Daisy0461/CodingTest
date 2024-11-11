@@ -5,7 +5,7 @@ using namespace std;
 typedef long long ll;
 
 int n, x;		//n개의 수열이 주어진다. 수열의 수는 서로 다르다.
-vector<int> v;
+vector<int> v; 
 ll result =0;
 
 int main()
