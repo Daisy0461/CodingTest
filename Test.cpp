@@ -2,11 +2,10 @@
 
 using namespace std;
 
-int n, k;
-int INF = 987654321;
-int result = 0;
-int arr[101], visited[101];
+int n, k, result = 0;
+int visited[101];
 vector<int> v;
+vector<int> cv;
 
 int main()
 {
@@ -15,39 +14,40 @@ int main()
 
 	cin >> n >> k;
 
-	for (int i = 0; i < k; i++){
-		cin >> arr[i];
+	int temp;
+	for (int i = 0; i < k; i++) {
+		cin >> temp;
+		v.push_back(temp);
 	}
 
 	for (int i = 0; i < k; i++) {
-		if (!visited[arr[i]] ) {
-			if (v.size() == n) {			
-				//콘센트에 자리가 없고 현재 콘센트에 꽂혀있지 않은 것이라면
-				int last_Index = 0; int findNum;
-				for (int a : v) {		//v는 현재 콘센트에 꽂혀있는 것을 의미한다. 가장 뒤에 사용할 것을 찾아야한다.
+		if (!visited[v[i]]) {		//v[i]가 현재 콘센트에 없다.
+			if (cv.size() == n) {	//현재 콘센트가 꽉 찼다.
+				int last_Index = 0; int pos;
+				for (int t : cv) {
 					int tempIndex = 987654321;
 					for (int j = i + 1; j < k; j++) {
-						if (arr[j] == a) {			//이후에 사용하는 가전제품 중 v에 있는 a와동일한 가전제품을 찾았다면
-							tempIndex = j;
+						if (v[j] == t) {		//이후에 사용할 리스트(v)에서 현재 꽂혀있는 t와 동일한 것을 찾았다.
+							tempIndex = j;		//그 가전제품은 j번째에서 다시 사용한다. 이 사용하는 것은 이후에도 존재할 수 있으나 제일 가까이서 사용하는 것을 찾는다.
 							break;
 						}
 					}
 
-					if (last_Index < tempIndex) {			//지금까지 나왔던 값들 보다 현재의 가전제품이 제일 뒤에 사용한다.
-						findNum = a;
+					if (last_Index < tempIndex) {			//지금 찾은 index값이 지금까지 찾았던 Index보다 값이 크다. 즉, 더 이후에 사용한다.
 						last_Index = tempIndex;
+						pos = t;
 					}
 				}
 
-				visited[findNum] = 0;
-				v.erase(find(v.begin(), v.end(), findNum));
+				visited[pos] = 0;
 				result++;
+				cv.erase(find(cv.begin(), cv.end(), pos));
 			}
-			v.push_back(arr[i]);
-			visited[arr[i]] = 1;
-		}	
+
+			visited[v[i]] = 1;
+			cv.push_back(v[i]);
+		}
 	}
 
 	cout << result;
-
 }
