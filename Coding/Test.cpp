@@ -2,39 +2,95 @@
 
 using namespace std;
 
-typedef long long ll;
+int n; int maxResult = 0;
+deque<int> dq;
+int arr[21][21];
 
-int n;
-int visited[100001];
-vector<int> v;
-ll result=0;
+void playGame(int playCount, int inputArray[21][21]) {
 
-int main() {
-      ios_base::sync_with_stdio(0);
-      cin.tie(0); cout.tie(0);
+	//cout << "play Count : " << playCount << "\n";
+	if (playCount == 5) {
+		int  tempMax = 0;
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < n; j++) {
+				if (inputArray[i][j] > tempMax) {
+					tempMax = inputArray[i][j];
+				}
+			}
+		}
 
-      cin >> n;
+		maxResult = max(maxResult, tempMax);
 
-      int temp;
-      for (int i = 0; i < n; i++) {
-            cin >> temp;
-            v.push_back(temp);
-      }
+		return;
+	}
 
-      int point = 0;  // 시작 포인터
-      for (int i = 0; i < n; i++) {
-            while (visited[v[i]]) {  // 중복이 발생하면 point 이동
-                  visited[v[point]] = 0;  // point 요소의 방문 여부를 해제
-                  point++;
-             }
+	for (int h = 0; h < 4; h++) {
 
-            visited[v[i]] = 1;  // 현재 요소 방문 처리
+		int tempArray[21][21];
+		fill(&tempArray[0][0], &tempArray[0][0] + 21 * 21, 0);
 
-            // i - point + 1은 point부터 i까지의 중복 없는 부분 수열의 개수
-            result += (i - point + 1);
-      }
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < n; j++) {
+				if (inputArray[i][j] == 0) continue;		//무시하지 않으면 2,0,2의 경우에 문제가 생긴다. 
+				if (!dq.size() || dq.back() != inputArray[i][j]) {
+					dq.push_back(inputArray[i][j]);
+				}
+				else if (dq.back() == inputArray[i][j]) {
+					int temp = dq.back();
+					dq.pop_back();
+					dq.push_back(temp * 2);
+					dq.push_back(0);			//이것을 하는 이유가 만약 temp가 2여서 4가 만들어지는데 그 다음 숫자가 4라면 합쳐지기 때문에 그 것을 방지하기 위해서이다. 
+				}
+			}
 
-      cout << result;
+			int arrayIndex = 0;
+			while (dq.size()) {
+				if (dq.front() == 0) {
+					dq.pop_front();
+					continue;
+				}
+				tempArray[i][arrayIndex] = dq.front();
+				dq.pop_front();
+				arrayIndex++;
+			 }
+
+		}
+
+		playGame(playCount + 1, tempArray);
+
+		int turnArray[21][21];
+		for (int i = 0; i < n; i++)	{
+			for (int j = 0; j < n; j++) {
+				turnArray[j][n - 1 - i] = inputArray[i][j];
+			}
+		}
+
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < n; j++) {
+				inputArray[i][j] = turnArray[i][j];
+			}
+		}
+
+	}
+
 }
 
-//5 1 2 3 2 1
+int main()
+{
+	ios_base::sync_with_stdio(0);
+	cin.tie(0); cout.tie(0);
+
+	cin >> n;
+
+	//초기 arr입력
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < n; j++) {
+			cin >> arr[i][j];
+		}
+	}
+
+	playGame(0, arr);
+
+	cout << maxResult;
+	
+}
