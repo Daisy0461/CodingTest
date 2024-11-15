@@ -2,32 +2,81 @@
 
 using namespace std;
 
+int minResult = 987654321;
 int n;
-vector<pair<int, int>> v;
+vector<vector<int>> v(21);
+vector<int> oneTeam, zeroTeam;
+
 
 int main()
-{
+{ 
+	ios_base::sync_with_stdio(0);
+	cin.tie(0); cout.tie(0);
+
 	cin >> n;
 
-	int arriveTime, checkTime;
+	int half = n / 2;
+
 	for (int i = 0; i < n; i++) {
-		cin >> arriveTime >> checkTime;
-
-		v.push_back({ arriveTime, checkTime });
-	}
-
-	sort(v.begin(), v.end());
-
-	int et = v[0].first + v[0].second;
-
-	for (int i = 1; i < n; i++) {
-		if (v[i].first >et) {		//´ÙÀ½ ¿ä¼ÒÀÇ µµÂø½Ã°£ÀÌ ÇöÀç  ³¡³­½Ã°£º¸´Ù Å©´Ù.
-			et = v[i].first + v[i].second;
-		}
-		else {
-			et += v[i].second;
+		for (int j = 0; j < n; j++) {
+			int temp;
+			cin >> temp;
+			v[i].push_back(temp);
 		}
 	}
 
-	cout << et;
+	for (int i = 1; i < (1 << n); i++) {
+		int sumOneTeam = 0, sumZeroTeam = 0;
+		oneTeam.clear(); zeroTeam.clear();		//íŒ€ ì´ˆê¸°í™”
+
+		for (int j = 0; j < n; j++) {
+			if (i & (1 << j)) { //ië¼ëŠ” ìˆ«ìžì˜ jë²ˆì§¸ ë¹„íŠ¸ê°€ ì¼œì ¸ìžˆë‹¤.
+				oneTeam.push_back(j);
+			}
+			else {
+				zeroTeam.push_back(j);
+			}
+		}
+
+		//cout << "here i :" << i << "\n";
+
+		//cout << "One Team \n";
+		//for (int j : oneTeam) {
+		//	cout << j << " ";
+		//}
+		//cout << "\nZero Team \n";
+		//for (int j : zeroTeam) {
+		//	cout << j << " ";
+		//}
+		//cout << "\n";
+
+
+		if (oneTeam.size() == half) {		//íŒ€ ìˆ˜ê°€ ë§žì¶°ì¡Œë‹¤.
+			//cout << "one Team \n";
+			for (int j = 0; j < oneTeam.size(); j++) {
+				for (int t = 0; t < oneTeam.size(); t++) {
+					//cout << "oneTeam[j] :" << oneTeam[j] << " oneTeam[t] : " << oneTeam[t] << "\n";
+					sumOneTeam += v[oneTeam[j]][oneTeam[t]];
+					//cout << "now sumOne : " << sumOneTeam << "\n";
+				}
+			}
+
+			//cout << "zero Team \n";
+			for (int j = 0; j < zeroTeam.size(); j++) {
+				for (int t = 0; t < zeroTeam.size(); t++) {
+					//cout << "j :" << j << " t : " << t << "\n";
+					sumZeroTeam += v[zeroTeam[j]][zeroTeam[t]];
+					//cout << "now sumZero : " << sumZeroTeam << "\n";
+				}
+			}
+
+			minResult = min(minResult, abs(sumZeroTeam - sumOneTeam));
+		}
+
+		if (minResult == 0) {
+			break;
+		}
+	}
+
+	cout << minResult;
 }
