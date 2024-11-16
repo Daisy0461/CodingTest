@@ -14,7 +14,7 @@ int main()
 	cin.tie(0); cout.tie(0);
 
 	cin >> n;
-
+ 
 	int half = n / 2;
 
 	for (int i = 0; i < n; i++) {
