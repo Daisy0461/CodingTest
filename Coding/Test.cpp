@@ -1,96 +1,104 @@
-#include <bits/stdc++.h>
+#include<bits/stdc++.h>
 
 using namespace std;
 
-int n; int maxResult = 0;
-deque<int> dq;
-int arr[21][21];
+const int dy[] = { 0,1,0,-1 };
+const int dx[] = { 1,0,-1,0 };
+int n, m, k, a[104][104], temp[104][104], visited[104][104], sy, sx, ey, ex, r, c, s, direction, result = 99999999;
+vector<pair<int, int>> v;
+vector<int> v_idx;
+vector<tuple<int, int, int>> rotateV;
 
-void playGame(int playCount, int inputArray[21][21]) {
+void directionChange(int y, int x, int first)
+{
+      if (!first && y == sy && x == sx)    direction++;
+      if (!first && y == sy && x == ex)    direction++;
+      if (!first && y == ey && x == ex)    direction++;
+      if (!first && y == ey && x == sx)    direction++;
 
-	//cout << "play Count : " << playCount << "\n";
-	if (playCount == 5) {
-		int  tempMax = 0;
-		for (int i = 0; i < n; i++) {
-			for (int j = 0; j < n; j++) {
-				if (inputArray[i][j] > tempMax) {
-					tempMax = inputArray[i][j];
-				}
-			}
-		}
+      int ny = y + dy[direction];
+      int nx = x + dx[direction];
+      if (visited[ny][nx]) return;
+      visited[ny][nx] = 1;
+      v.push_back({ ny,nx });
+      directionChange(ny, nx, 0);
+}
 
-		maxResult = max(maxResult, tempMax);
+void rotateAll(int y, int x, int cnt)
+{
+      for (int i = 1; i <= cnt; i++)
+      {
+            sy = y - 1 * i;
+            sx = x - 1 * i;
+            ey = y + 1 * i;
+            ex = x + 1 * i;
+            v.clear();
+            direction = 0;
+            memset(visited, 0, sizeof(visited));
+            visited[sy][sx] = 1;
+            v.push_back({ sy,sx }); // 돌려야 할 것 뽑아내기
+            directionChange(sy, sx, 1);
 
-		return;
-	}
+            vector<int> v2;
+            for (pair<int, int> c : v)
+            {
+                  v2.push_back(temp[c.first][c.second]);
+            }
+            rotate(v2.rbegin(), v2.rbegin() + 1, v2.rend());
+            for (int i = 0; i < v.size(); i++)
+            {
+                  temp[v[i].first][v[i].second] = v2[i];
+            }
+      }
+}
 
-	for (int h = 0; h < 4; h++) {
-
-		int tempArray[21][21];
-		fill(&tempArray[0][0], &tempArray[0][0] + 21 * 21, 0);
-
-		for (int i = 0; i < n; i++) {
-			for (int j = 0; j < n; j++) {
-				if (inputArray[i][j] == 0) continue;		//무시하지 않으면 2,0,2의 경우에 문제가 생긴다. 
-				if (!dq.size() || dq.back() != inputArray[i][j]) {
-					dq.push_back(inputArray[i][j]);
-				}
-				else if (dq.back() == inputArray[i][j]) {
-					int temp = dq.back();
-					dq.pop_back();
-					dq.push_back(temp * 2);
-					dq.push_back(0);			//이것을 하는 이유가 만약 temp가 2여서 4가 만들어지는데 그 다음 숫자가 4라면 합쳐지기 때문에 그 것을 방지하기 위해서이다. 
-				}
-			}
-
-			int arrayIndex = 0;
-			while (dq.size()) {
-				if (dq.front() == 0) {
-					dq.pop_front();
-					continue;
-				}
-				tempArray[i][arrayIndex] = dq.front();
-				dq.pop_front();
-				arrayIndex++;
-			 }
-
-		}
-
-		playGame(playCount + 1, tempArray);
-
-		int turnArray[21][21];
-		for (int i = 0; i < n; i++)	{
-			for (int j = 0; j < n; j++) {
-				turnArray[j][n - 1 - i] = inputArray[i][j];
-			}
-		}
-
-		for (int i = 0; i < n; i++) {
-			for (int j = 0; j < n; j++) {
-				inputArray[i][j] = turnArray[i][j];
-			}
-		}
-
-	}
-
+int min_rowSum()
+{
+      for (int i : v_idx)
+      {
+            rotateAll(get<0>(rotateV[i]), get<1>(rotateV[i]), get<2>(rotateV[i]));
+      }
+      int tempResult = 99999999;
+      for (int i = 0; i < n; i++)
+      {
+            int cnt = 0;
+            for (int j = 0; j < m; j++)
+            {
+                  cnt += temp[i][j];
+            }
+            tempResult = min(tempResult, cnt);
+      }
+      return tempResult;
 }
 
 int main()
 {
-	ios_base::sync_with_stdio(0);
-	cin.tie(0); cout.tie(0);
+      cin >> n >> m >> k;
 
-	cin >> n;
+      for (int i = 0; i < n; i++)
+      {
+            for (int j = 0; j < m; j++)
+            {
+                  cin >> a[i][j];
+            }
+      }
 
-	//초기 arr입력
-	for (int i = 0; i < n; i++) {
-		for (int j = 0; j < n; j++) {
-			cin >> arr[i][j];
-		}
-	}
+      for (int i = 0; i < k; i++)
+      {
+            cin >> r >> c >> s;
+            r--; // 0부터 시작하려고 뺌
+            c--;
+            rotateV.push_back({ r,c,s });
+            v_idx.push_back(i);
+      }
+      do
+      {
+            memcpy(temp, a, sizeof(temp));
+            result = min(result, min_rowSum());
 
-	playGame(0, arr);
+      } while (next_permutation(v_idx.begin(), v_idx.end()));
 
-	cout << maxResult;
-	
+      cout << result;
+
+      return 0;
 }
