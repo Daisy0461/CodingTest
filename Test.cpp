@@ -2,81 +2,75 @@
 
 using namespace std;
 
-int minResult = 987654321;
-int n;
-vector<vector<int>> v(21);
-vector<int> oneTeam, zeroTeam;
-
+int n, k, L, result = 0;
+int gameMap[105][105];
+int dy[] = { 0, 1, 0 ,-1 };
+int dx[] = { 1, 0, -1, 0 };
+vector<pair<int, char>> t;
+deque<pair<int, int>> s;
 
 int main()
-{ 
-	ios_base::sync_with_stdio(0);
-	cin.tie(0); cout.tie(0);
+{
+	cin >> n >> k;
 
-	cin >> n;
-
-	int half = n / 2;
-
-	for (int i = 0; i < n; i++) {
-		for (int j = 0; j < n; j++) {
-			int temp;
-			cin >> temp;
-			v[i].push_back(temp);
-		}
+	int tempAY, tempAX;
+	for (int i = 0; i < k; i++) {
+		cin >> tempAY >> tempAX;
+		gameMap[tempAY][tempAX] = 1;		//사과
 	}
 
-	for (int i = 1; i < (1 << n); i++) {
-		int sumOneTeam = 0, sumZeroTeam = 0;
-		oneTeam.clear(); zeroTeam.clear();		//팀 초기화
+	cin >> L;
+	int time; char dir;
+	for (int i = 0; i < L; i++) {
+		cin >> time >> dir;
+		t.push_back({ time, dir });
+	}
 
-		for (int j = 0; j < n; j++) {
-			if (i & (1 << j)) { //i라는 숫자의 j번째 비트가 켜져있다.
-				oneTeam.push_back(j);
+	sort(t.begin(), t.end());
+
+	int di = 0, ti = 0;
+	int ny = 1, nx = 1;
+	while (1) {
+		if (s.empty()) {
+			s.push_back({ ny, nx });
+			gameMap[ny][nx] = 2;
+			continue;
+		}
+
+		if (ti < L && t[ti].first == result) {	//turn할 시간
+			//cout << "change dir\n";
+			if (t[ti].second == 'D') {
+				di = (di + 1) % 4;
 			}
 			else {
-				zeroTeam.push_back(j);
+				di = (di - 1 + 4) % 4;
 			}
+			ti += 1;
 		}
 
-		//cout << "here i :" << i << "\n";
-
-		//cout << "One Team \n";
-		//for (int j : oneTeam) {
-		//	cout << j << " ";
-		//}
-		//cout << "\nZero Team \n";
-		//for (int j : zeroTeam) {
-		//	cout << j << " ";
-		//}
-		//cout << "\n";
-
-
-		if (oneTeam.size() == half) {		//팀 수가 맞춰졌다.
-			//cout << "one Team \n";
-			for (int j = 0; j < oneTeam.size(); j++) {
-				for (int t = 0; t < oneTeam.size(); t++) {
-					//cout << "oneTeam[j] :" << oneTeam[j] << " oneTeam[t] : " << oneTeam[t] << "\n";
-					sumOneTeam += v[oneTeam[j]][oneTeam[t]];
-					//cout << "now sumOne : " << sumOneTeam << "\n";
-				}
-			}
-
-			//cout << "zero Team \n";
-			for (int j = 0; j < zeroTeam.size(); j++) {
-				for (int t = 0; t < zeroTeam.size(); t++) {
-					//cout << "j :" << j << " t : " << t << "\n";
-					sumZeroTeam += v[zeroTeam[j]][zeroTeam[t]];
-					//cout << "now sumZero : " << sumZeroTeam << "\n";
-				}
-			}
-
-			minResult = min(minResult, abs(sumZeroTeam - sumOneTeam));
+		ny += dy[di];
+		nx += dx[di];
+		//cout << "ny : " << ny << " nx : " << nx << "\n";
+		if (ny < 1 || nx < 1 || ny >= n + 1 || nx >= n + 1) {
+			result++; break;
+		}
+		if (gameMap[ny][nx] == 2) {
+			result++; break;
 		}
 
-		if (minResult == 0) {
-			break;
+		if (gameMap[ny][nx] == 1) {		//다음칸이 사과라면 꼬리 줄어들지 않는다.
+			s.push_back({ ny, nx });
+			gameMap[ny][nx] = 2;
 		}
+		else {		//아무것도 없는 칸이면 꼬리 줄어들고 머리 나간다.
+			gameMap[s.front().first][s.front().second] = 0;
+			s.pop_front();
+			s.push_back({ ny, nx });
+			gameMap[ny][nx] = 2;
+		}
+
+		result += 1;
 	}
 
-	cout << minResult;
+	cout << result;
 }
