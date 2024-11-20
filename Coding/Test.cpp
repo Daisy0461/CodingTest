@@ -2,59 +2,38 @@
 
 using namespace std;
 
-int toms[4];
-int visited[5];
-int n;		//회전 횟수
+//동일하게 극이 다르면 회전방향의 반대방향으로 회전한다.
+//rotate <- / rrotate ->
 
-void turn(int t, int dir) {		//toms[t]번째 톱니가 돌아가고 dir 방향으로 돌아간다.
-	//체크해야하는 비트 자리는 1 왼쪽(위), 5 오른쪽(아래)
-	visited[t] = 1;			//다시 도는 걸 방지하기 위해서
-	/*cout << "in t : " << t << "  dir : ";
-	if (dir == 1) {
-		cout << "시계\n";
+int t, k;		//톱니바퀴는 1번부터 순서가 매겨진다. k번 회전한다.
+int result = 0;
+vector<vector<int>> toms(1005);
+int visited[1005];
+
+void turn(int tomNum, int dir)
+{
+	//cout << tomNum << "is turning\n";
+	visited[tomNum] = 1;
+
+	if (tomNum + 1 < t && !visited[tomNum + 1]) {		//tomNum + 1이 범위를 벗어나지 않으면서 방문하지 않은 톱니라면
+		//현재 톱니와 오른쪽의 톱니와 비교해야한다.
+		if (toms[tomNum][2] != toms[tomNum + 1][6]) {		//현재 톱니의 오른쪽과 오른쪽 톱니의 왼쪾이 동일하지 않으면 돌린다.
+			turn(tomNum + 1, dir * -1);
+		}
+	}
+
+	if (tomNum - 1 >= 0 && !visited[tomNum - 1]) {		//tomNum - 1이 범위를 벗어나지 않으면서 방문하지 않는 톱니라면
+		if (toms[tomNum][6] != toms[tomNum - 1][2]) {		//현재 톱니의 오른쪽과 오른쪽 톱니의 왼쪾이 동일하지 않으면 돌린다.
+			turn(tomNum - 1, dir * -1);
+		}
+	}
+
+	//현재 톱니 돌리기
+	if (dir == 1) {		//시계 방향 rrot
+		rotate(toms[tomNum].rbegin(), toms[tomNum].rbegin() + 1, toms[tomNum].rend());
 	}
 	else {
-		cout << "반시계\n";
-	}*/
-	if (t+1 < 4 && !visited[t + 1]) {		//t+1이 범위 안이다. 그리고 t번째의 톱니의 오른쪽과 t+1번째의 톱니의 비트가 동일하다. -> t와 t의 오른쪽이 같다.
-		//무조건 다르게 나오네 앞은 100000고 뒤는 10이니까 당연히 다르게 나오지 수정해야함.
-		int t1 = toms[t] & (1 << 5);
-		int t2 = toms[t + 1] & (1 << 1);
-		t1 = t1 >> 4;
-
-		//cout << "t+1 -> " << "t's 5번 bit : " << t1/2 << "   t2's 1번 bit : " << t2/2 << "\n";
-
-		if (t1 != t2) {
-			turn(t + 1, dir * -1);
-		}
-	}
-
-	if (t - 1 >= 0 && !visited[t - 1]) {		//t-1이 범위 안이다. 그리고 t번째의 톱니 왼쪽과 t-1번째의 오른쪽의 비트가 동일하다.
-		int t1 = toms[t] & (1 << 1);
-		int t2 = toms[t - 1] & (1 << 5);
-		t2 = t2 >> 4;
-
-		//cout << "t-1 -> " << "t's 1번 bit : " << t1/2 << "   t2's 5번 bit : " << t2/2 << "\n";
-
-		if ( t1 != t2) {
-			turn(t - 1, dir * -1);
-		}
-	}
-
-	bool isOn;
-	if (dir == 1) {		//시계방향
-		isOn = (toms[t] & (1 << 0));		//0번째 비트가 켜져있으면 true 아니면 false가 들어간다.
-		toms[t] = toms[t] >> 1;
-		if (isOn) {
-			toms[t] = toms[t] + (1 << 7);		//7번째 비트를 킨다.
-		}
-	}
-	else {				//반시계방향
-		isOn = (toms[t] & (1 << 7));		//toms의 7번쨰 비트가 true인지 false인지 확인
-		toms[t] = toms[t] << 1;
-		if (isOn) {
-			toms[t] = toms[t] - (1<<8) + 1;		//8번째 비트를 끄고 첫 비트를 킨다.
-		}
+		rotate(toms[tomNum].begin(), toms[tomNum].begin() + 1, toms[tomNum].end());
 	}
 }
 
@@ -63,48 +42,39 @@ int main()
 	ios_base::sync_with_stdio(0);
 	cin.tie(0); cout.tie(0);
 
-	char temp;
-	for (int i = 0; i < 4; i++) {			//이진수로 저장
-		int tempNum = 0;
-		for (int k = 0; k < 8; k++) {
-			cin >> temp;
-			if (temp == '1') {
-				tempNum = tempNum + (1 << (7-k));
-			}
+	cin >> t;
+
+	char tempTom;
+	//12시가 [i][7]에 들어간다. 시계방향으로 1씩 줄어드는 입력이다.
+	for (int i = 0; i < t; i++) {
+		for (int j = 0; j < 8; j++) {
+			cin >> tempTom;
+			toms[i].push_back(tempTom - '0');
 		}
-		toms[i] = tempNum;
 	}
 
-	cin >> n;
+	cin >> k;
 
-	int st, dir;
-	for (int i = 0; i < n; i++) {
-		cin >> st >> dir;
-		fill(&visited[0], &visited[0] + 5, 0);
-		turn(st - 1, dir);
+	int tom, dir;
+	for (int i = 0; i < k; i++) {
+		fill(&visited[0], &visited[0] + 1005, 0);
 
-		//아래는 출력
-		/*cout <<  i << "'s toms\n";
-		for (int j : toms) {
-			for (int k = 0; k < 8; k++) {
-				if (j & (1 << 7 - k)) {
-					cout << 1;
-				}
-				else {
-					cout << 0;
-				}
+		cin >> tom >> dir;		//어느 톱니를 돌리는 것인지 
+		turn(tom - 1, dir);
+
+		/*cout << k << "turn result\n";
+		for (int i = 0; i < t; i++) {
+			for (int j : toms[i]) {
+				cout << j;
 			}
 			cout << "\n";
-		}
-		cout << "\n";*/
+		}*/
 	}
 
-	int result = 0;
-	for (int i = 0; i < 4; i++) {
-		if (toms[i] & (1 << 7)) {
-			result = result + (1 << i);
-		}
+	for (int i = 0; i < t; i++) {
+		result += toms[i][0];
 	}
 
-	cout <<  result;
+	cout << result;
+
 }
