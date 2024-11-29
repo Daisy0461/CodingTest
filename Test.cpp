@@ -1,76 +1,71 @@
-#include <bits/stdc++.h>
-
+#include <iostream>
+#include <climits>
 using namespace std;
 
-int n, k, L, result = 0;
-int gameMap[105][105];
-int dy[] = { 0, 1, 0 ,-1 };
-int dx[] = { 1, 0, -1, 0 };
-vector<pair<int, char>> t;
-deque<pair<int, int>> s;
+int dice[10];   // 주사위의 입력값
+int piece[4];   // 현재 말의 위치
 
-int main()
-{
-	cin >> n >> k;
+int arr[34];    // 다음에 갈 위치 저장
+int score[34];  // 윷놀이판 엔트리의 점수
+int turn[34];   // 파란색 화살표가 있는 전환 지점
+bool check[34]; // 윷놀이판 엔트리의 말 존재여부
 
-	int tempAY, tempAX;
-	for (int i = 0; i < k; i++) {
-		cin >> tempAY >> tempAX;
-		gameMap[tempAY][tempAX] = 1;		//사과
-	}
+int ans = INT_MIN;
+int get_max(int a, int b) { return a > b ? a : b; }
 
-	cin >> L;
-	int time; char dir;
-	for (int i = 0; i < L; i++) {
-		cin >> time >> dir;
-		t.push_back({ time, dir });
-	}
+void dfs(int cnt, int sum) {
+      if (cnt == 10) {
+            ans = get_max(ans, sum);
+            return;
+      }
 
-	sort(t.begin(), t.end());
+      for (int i = 0; i < 4; i++) {
+            int prev = piece[i];
+            int cur = prev;
+            int move = dice[cnt];
 
-	int di = 0, ti = 0;
-	int ny = 1, nx = 1;
-	while (1) {
-		if (s.empty()) {
-			s.push_back({ ny, nx });
-			gameMap[ny][nx] = 2;
-			continue;
-		}
+            if (turn[cur] > 0) { // 파란색 화살표 지점 도달시 방향 전환
+                  cur = turn[cur]; // 현재 위치가 전환점인지 먼저 확인해서 방향 바꿔놓고, 이동 시작
+                  move--;
+            }
 
-		if (ti < L && t[ti].first == result) {	//turn할 시간
-			//cout << "change dir\n";
-			if (t[ti].second == 'D') {
-				di = (di + 1) % 4;
-			}
-			else {
-				di = (di - 1 + 4) % 4;
-			}
-			ti += 1;
-		}
+            while (move--) cur = arr[cur]; // 남은 이동횟수만큼 칸 이동
 
-		ny += dy[di];
-		nx += dx[di];
-		//cout << "ny : " << ny << " nx : " << nx << "\n";
-		if (ny < 1 || nx < 1 || ny >= n + 1 || nx >= n + 1) {
-			result++; break;
-		}
-		if (gameMap[ny][nx] == 2) {
-			result++; break;
-		}
+            if (cur != 21 && check[cur]) continue; // 도착위치가 아닌데, 해당 위치에 말이 있다면 못 놓음
 
-		if (gameMap[ny][nx] == 1) {		//다음칸이 사과라면 꼬리 줄어들지 않는다.
-			s.push_back({ ny, nx });
-			gameMap[ny][nx] = 2;
-		}
-		else {		//아무것도 없는 칸이면 꼬리 줄어들고 머리 나간다.
-			gameMap[s.front().first][s.front().second] = 0;
-			s.pop_front();
-			s.push_back({ ny, nx });
-			gameMap[ny][nx] = 2;
-		}
+            check[prev] = false;
+            check[cur] = true;
+            piece[i] = cur;
 
-		result += 1;
-	}
+            dfs(cnt + 1, sum + score[cur]); // 이동가능할 시, 해당 칸에 체크하고 점수추가해서 재귀 호출
 
-	cout << result;
+            piece[i] = prev;
+            check[prev] = true;
+            check[cur] = false;
+      }
+}
+
+void init() {
+      for (int i = 0; i < 21; i++) arr[i] = i + 1;
+      arr[21] = 21;
+      for (int i = 22; i < 27; i++) arr[i] = i + 1;
+      arr[27] = 20; arr[28] = 29; arr[29] = 30;
+      arr[30] = 25; arr[31] = 32; arr[32] = 25;
+
+      turn[5] = 22; turn[10] = 31; turn[15] = 28;
+
+      for (int i = 0; i < 21; i++) score[i] = 2 * i;
+      score[22] = 13; score[23] = 16; score[24] = 19;
+      score[25] = 25; score[26] = 30; score[27] = 35;
+      score[28] = 28; score[29] = 27; score[30] = 26;
+      score[31] = 22; score[32] = 24;
+}
+
+int main() {
+      init();
+      for (int i = 0; i < 10; i++) cin >> dice[i];
+      dfs(0, 0);
+
+      cout << ans << endl;
+      return 0;
 }
