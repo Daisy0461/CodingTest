@@ -8,7 +8,7 @@ using namespace std;
 int n, sx, sy, dir, gen;
 int dy[] = {0, -1, 0 ,1};
 int dx[] = {1, 0, -1, 0};
-
+ 
 
 
 int main()
