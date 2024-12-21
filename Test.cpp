@@ -5,7 +5,7 @@ using namespace std;
 //모든 세대 다 그림
 
 
-int n, sx, sy, dir, gen;
+int n, sx, sy, dir, gen; 
 int dy[] = {0, -1, 0 ,1};
 int dx[] = {1, 0, -1, 0};
  
