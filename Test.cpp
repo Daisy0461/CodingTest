@@ -11,7 +11,7 @@ vector<int> pastDir;
 
 void dragonCurve(int y, int x, int dir, int g)
 {
-	points[y][x] = 1;
+	points[y][x] = 1; 
 	int ny = y + dy[dir];
 	int nx = x + dx[dir];
 	pastDir.push_back(dir);
