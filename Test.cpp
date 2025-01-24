@@ -15,7 +15,7 @@ void dragonCurve(int y, int x, int dir, int g)
 	int ny = y + dy[dir];
 	int nx = x + dx[dir];
 	pastDir.push_back(dir);
-	points[ny][nx] = 1;
+	points[ny][nx] = 1; 
 
 	while (g) {
 		g -= 1;
