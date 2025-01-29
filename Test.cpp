@@ -2,9 +2,69 @@
 
 using namespace std;
 
-int n;		//총 배열 길이
-int maxResult = -987654321;
-bool bIsPossitive = false;
+int n, result = -987654321;
+int arr_input[21][21];		//처음 들어오는 Input
+
+deque<int> dq;
+
+void play(int playCount, int inputArray[21][21])
+{
+	if (playCount == 5) {
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < n; j++) {
+				result = max(inputArray[i][j], result);
+			}
+		}
+		return;
+	}
+
+	for (int k = 0; k < 4; k++) {
+		int tempArray[21][21];
+		fill(&tempArray[0][0], &tempArray[0][0] + 21 * 21, 0);
+		for (int i = 0; i < n; i++) {
+			dq.push_back(0);
+			for (int j = 0; j < n; j++) {
+				//if (inputArray[i][j] == 0) continue;
+				int back = dq.back();
+				if (inputArray[i][j] == back) {
+					dq.pop_back();
+					dq.push_back(back * 2);
+				  dq.push_back(0);
+				}
+				else {
+					dq.push_back(inputArray[i][j]);
+				}
+			}
+			//가로 한 줄이 끝났다.
+			int pushIndex = 0;
+			while (dq.size()) {
+				if (dq.front() == 0) {		//0은 무시한다.
+					dq.pop_front();
+				}
+				else {
+					tempArray[i][pushIndex] = dq.front();
+					dq.pop_front();
+					pushIndex++;
+				}
+			}
+		}
+		//arr_temp가 2024게임의 왼쪽으로 shift한 모양이 된다.
+		play(playCount + 1, tempArray);
+
+		int arr_rotate[21][21];
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < n; j++) {
+				arr_rotate[i][j] = inputArray[n-j-1][i];
+			}
+		}
+
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < n; j++) {
+				inputArray[i][j] = arr_rotate[i][j];
+			}
+		}
+	}
+}
 
 int main()
 {
@@ -13,29 +73,16 @@ int main()
 
 	cin >> n;
 
+	//초기 상태 입력
 	int temp;
-	int sum = 0;
 	for (int i = 0; i < n; i++) {
-		cin >> temp;
-		if (temp > 0) bIsPossitive = true;		//최소한 하나의 양수가 들어왔다.
-
-		if (temp > maxResult) {		//단일 값이 가장 크다면 -> 예를 들어서 모든 값이 음수
-			maxResult = temp;
-		}
-
-		sum += temp;
-		if (bIsPossitive && sum > maxResult) {		//최소한 하나의 양수가 있어야하는 이유 -> 밑에서 sum을 0으로 초기화하기 때문에 모든 값이 양수일 때 maxResult를 0으로 초기화하면 안된다.
-			maxResult = sum;
-		}
-
-		if (sum < 0) {		//지금까지 더 한 결과가 음수이다. 즉, 이후에 그냥 더 하는 값이 더 크다.
-			sum = 0;		
+		for (int j = 0; j < n; j++) {
+			cin >> temp;
+			arr_input[i][j] = temp;
 		}
 	}
 
-	if (bIsPossitive && sum > maxResult) {
-		maxResult = sum;
-	}
+	play(0, arr_input);
 
-	cout << maxResult;
+	cout << result;
 }
