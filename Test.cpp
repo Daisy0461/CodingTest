@@ -12,7 +12,66 @@ int main()
 	ios_base::sync_with_stdio(0);
 	cin.tie(0); cout.tie(0);
 
-	cin >> n >> m >> turnCount;
+	cin >> n >> m >> turnCount;#include <bits/stdc++.h>
+
+using namespace std;
+
+int n, t, m;		//n = 수첩에 적힌 정수의 개수, t = TestCase수, m = 각 노트당 물어보는 수의 개수
+vector<int> v;
+
+bool bs(int findNum) {
+	bool bIsFind = false;
+	int left = 0;
+	int right = v.size() - 1;
+	int sp;
+
+	while (left <= right) {
+		sp = (left + right) / 2;
+		if (v[sp] > findNum) {			//중앙 숫자가 더 크다.
+			right = sp - 1;
+		}
+		else if (v[sp] < findNum) {		//중앙 숫자가 더 작다.
+			left = sp + 1;
+		}
+		else {
+			//찾았다.
+			bIsFind = true;
+			break;
+		}
+	}
+	return bIsFind;
+}
+
+int main()
+{
+	ios_base::sync_with_stdio(0);
+	cin.tie(0); cout.tie(0);
+
+	cin >> t;
+
+	for (int i = 0; i < t; i++) {
+		cin >> n;
+		//노트에 수 입력
+		for (int j = 0; j < n; j++) {
+			int temp;
+			cin >> temp;
+			v.push_back(temp);
+		}
+		
+		//bs를 위한 sort
+		sort(v.begin(), v.end());
+
+		//물어보는 작업.
+		cin >> m;
+		int num;
+		for (int j = 0; j < m; j++) {
+			cin >> num;
+			bool bIsFind = bs(num);
+			if (bIsFind) cout << "Number Found\n";
+			else cout << "Number not Found\n";
+		}
+	}
+}
 
 	//원판에 숫자 적기
 	int temp;
