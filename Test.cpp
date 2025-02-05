@@ -2,48 +2,35 @@
 
 using namespace std;
 
-int n, m;
-int result = 987654321;
+int n;
+int result = 0;
 vector<int> v;
-
-bool search(int num)
-{
-	int a = 0;
-	for (int i : v) {
-		a += i / num;
-		if (i % num) a++;
-	}
-
-	return a <= n;			//a가 실제 사람 수 보다 작으면 true
-}
+vector<int> v2(1001);
 
 int main()
 {
 	ios_base::sync_with_stdio(0);
 	cin.tie(0); cout.tie(0);
 
-	cin >> n >> m;
+	cin >> n;
 
-	int left = 1, right = 0, mid;
-	for (int i = 0; i < m; i++) {
-		int temp;
+	//수열 입력
+	int temp;
+	for (int i = 0; i < n; i++) {
 		cin >> temp;
 		v.push_back(temp);
-		right = max(right, temp);		//가장 큰 값을 right에 넣는다.
 	}
 
-	while (left <= right) {
-		mid = (left + right) / 2;
-		cout << "mid : " << mid;
-		if (search(mid)) {
-			cout << "  is pass \n";
-			result = min(result, mid);
-			right = mid - 1;
+	for (int i = 0; i < n; i++) {
+		int maxValue = 0;
+		for (int j = 0; j < i; j++) {
+			if (v[j] < v[i] && maxValue < v2[j]) {			//앞의 수가 현재 수보다 작다 && maxValue가 현재 위치에 있는 수 보다 작다.
+				maxValue = v2[j];
+			}
 		}
-		else {
-			cout << "  isn't pass \n";
-			left = mid + 1;
-		}
+		v2[i] = maxValue + 1;		//현재 i에는 maxValue + 1을 해서 하나를 더 한 수를 넣어준다.
+		cout << "i : " << i << "  v2[i] : " << v2[i] << "\n";
+		result = max(result, v2[i]);
 	}
 
 	cout << result;
