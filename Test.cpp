@@ -1,53 +1,45 @@
 #include <bits/stdc++.h>
- 
+
 using namespace std;
 
-int n, m;		//m번만 돈을뺀다.
-int result = 100000 * 10000 + 100;
-vector<int> v;
-
-bool check(int num)
-{
-	int a = 0; int takeMoney = 1;
-	for (int i : v) {
-		a += i;
-		if (i > num) return false;		//이미 하루가 num보다 크다. -> 금액이 맞지 않다.
-
-		if (a > num) {		//총합 한 값이 하루의 금액보다 크다.
-			a = i;
-			takeMoney += 1;
-		}
-	}
-
-	return takeMoney <= m;		//m번만 돈을 빼는데 이 함수 내에서 한 TakeMoney가 더 작거나 같다.
-}
+//A는 B를 먹는다. A는 자기보다 크기가 작은 B만 먹을 수 있다.
+//이런 쌍이 몇가기 있는가?
+int testCase, a, b;
+vector<int> va, vb;
 
 int main()
 {
 	ios_base::sync_with_stdio(0);
 	cin.tie(0); cout.tie(0);
 
-	cin >> n >> m;
+	cin >> testCase;
 
-	int temp;
-	int sum = 0;				//모든 금액 총합
-	for (int i = 0; i < n; i++) {
-		cin >> temp;
-		v.push_back(temp);
-		sum += temp;
+	for (int t = 0; t < testCase; t++) {
+		cin >> a >> b;
+		//a집합 b집합 입력
+		int temp, result = 0;
+		va.clear(); vb.clear();
+		for (int i = 0; i < a; i++) {
+			cin >> temp;
+			va.push_back(temp);
+		}
+		for (int i = 0; i < b; i++) {
+			cin >> temp;
+			vb.push_back(temp);
+		}
+		sort(va.begin(), va.end(), less<>());		//작은 것 부터 하도록 함.
+		sort(vb.begin(), vb.end());
+
+		for (int i : va) {
+			for (int j : vb) {
+				if (i > j) {
+					result++;
+				}
+				else break;
+			}
+		}
+		//cout << "result : ";
+		cout << result << "\n";
 	}
 
-	int left = 1, right = sum, mid;
-	while (left <= right) {
-		mid = (left + right) / 2;
-		if (check(mid)) {
-			result = min(result, mid);
-			right = mid - 1;
-		}
-		else {		//금액을 더 크게 만든다.
-			left = mid + 1;
-		}
-	}
-
-	cout << result;
 }
