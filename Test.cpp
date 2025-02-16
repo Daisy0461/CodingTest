@@ -1,43 +1,42 @@
 #include <bits/stdc++.h>
-
 using namespace std;
+#define max_n 60000000004
+#define MAX_M 10004
+typedef long long ll;
 
-int a, b;	
-vector<int> va, vb;
+ll n, m, a[MAX_M], lo, hi = max_n, ret, mid, temp;
 
-int main()
-{
-	ios_base::sync_with_stdio(0);
-	cin.tie(0); cout.tie(0);
+bool check(ll mid) {
+      temp = m; 
+      for (int i = 0; i < m; i++)
+            temp += mid / a[i];
+      return temp >= n; 
+}
 
-	cin >> a >> b;
-	int temp;
-	for (int i = 0; i < a; i++) {
-		cin >> temp;
-		va.push_back(temp);
-	}
-	for (int i = 0; i < b; i++) {
-		cin >> temp;
-		vb.push_back(temp);
-	}
+int main() {
+      cin >> n >> m;
+      for (int i = 0; i < m; i++) cin >> a[i];
+      if (n <= m) { cout << n; return 0; }
+      while (lo <= hi) {
+            mid = (lo + hi) / 2;
+            if (check(mid)) {
+                  ret = mid;
+                  hi = mid - 1;
+            }
+            else
+                  lo = mid + 1;
+      }
 
-	sort(va.begin(), va.end());
-	sort(vb.begin(), vb.end());
+      temp = m;
+      for (int i = 0; i < m; i++)
+            temp += ((ret - 1) / a[i]);
 
-	int Same = 0;
-	int aIndex = 0, bIndex = 0;
-	while (aIndex != va.size() && bIndex != vb.size()) {
-		if (va[aIndex] == vb[bIndex]) {
-			Same += 1;
-			aIndex += 1; bIndex += 1;
-		}
-		else if (va[aIndex] > vb[bIndex]) {		//a가 더 크다.
-			bIndex += 1;
-		}
-		else if (va[aIndex] < vb[bIndex]) {
-			aIndex += 1;
-		}
-	 }
-
-	cout << va.size() + vb.size() - Same * 2;
+      for (int i = 0; i < m; i++) {
+            if (ret % a[i] == 0) temp++; 
+            if (temp == n) {
+                  cout << i + 1 << "\n";
+                  return 0;
+            }
+      }
+      return 0;
 }
