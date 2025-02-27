@@ -1,28 +1,48 @@
-#include <bits/stdc++.h>
-
+#include <iostream>
+#include <cstring>
 using namespace std;
 
-int num;
-long long f[1005];
+#define INF 987654321;
 
-long long fibo(int n)
-{
-	if (n <= 1) return 1;
+int n, map[16][16];
+int dp[16][1 << 16]; //각 마을이 방문한 도시를 2진법으로 저장
 
-	long long& ret = f[n];
-	if (ret != -1) return ret;
+int dfs(int cur, int visit) {
 
-	return ret = fibo(n - 1) + fibo(n - 2);
+      if (visit == (1 << n) - 1) { //탐색 완료
+            if (map[cur][0] == 0) //이동불가능
+                  return INF;
+            return map[cur][0];
+      }
+
+      if (dp[cur][visit] != -1) //이미 탐색했으면
+            return dp[cur][visit];
+
+      dp[cur][visit] = INF;
+
+      for (int i = 0; i < n; i++) {
+            if (map[cur][i] == 0) //길 X
+                  continue;
+            if ((visit & (1 << i)) == (1 << i)) //이미 방문
+                  continue;
+            dp[cur][visit] = min(dp[cur][visit], map[cur][i] + dfs(i, visit | 1 << i));
+      }
+
+      return dp[cur][visit];
 }
 
-int main() {
-	ios_base::sync_with_stdio(0);
-	cin.tie(0); cout.tie(0);
+int main(int argc, const char* argv[]) {
+      ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
 
-	fill(&f[0], &f[0] + 1005, -1);
+      cin >> n;
+      for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                  cin >> map[i][j];
+            }
+      }
 
-	cin >> num;
+      memset(dp, -1, sizeof(dp)); //dp배열 -1로 초기화
+      cout << dfs(0, 1);
 
-	long long result = fibo(num);
-	cout << result;
+      return 0;
 }
