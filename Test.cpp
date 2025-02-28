@@ -20,7 +20,7 @@ int dfs(int cur, int visit) {
 
       dp[cur][visit] = INF;
 
-      for (int i = 0; i < n; i++) {
+      for (int i = 0; i < n; i++) { 
             if (map[cur][i] == 0) //길 X
                   continue;
             if ((visit & (1 << i)) == (1 << i)) //이미 방문
