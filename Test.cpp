@@ -10,7 +10,7 @@ int dp[16][1 << 16]; //각 마을이 방문한 도시를 2진법으로 저장
 int dfs(int cur, int visit) {
 
       if (visit == (1 << n) - 1) { //탐색 완료
-            if (map[cur][0] == 0) //이동불가능
+            if (map[cur][0] == 0) //이동불가능 
                   return INF;
             return map[cur][0];
       }
