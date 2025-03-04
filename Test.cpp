@@ -1,9 +1,32 @@
 #include <bits/stdc++.h>
 
+typedef long long ll;
+
 using namespace std;
 
 int n;
-long long dp[100];
+int dp[1000010];
+
+int go(int num)
+{
+	//cout << "now num : " << num << "\n";
+	if (num == 1) return 0;
+	if (dp[num] != 0) return dp[num];
+
+	int di3 = 1e9, di2 = 1e9;
+	if (num % 3 == 0) {
+		di3 = go(num / 3) + 1;
+	}
+	if(num % 2 == 0){
+		di2  =  go(num / 2) + 1;
+	}
+	int sub = go(num - 1) + 1;
+
+	int tempMin = min(di3, di2);
+	tempMin = min(tempMin, sub);
+
+	return dp[num] = tempMin;
+}
 
 int main()
 {
@@ -12,13 +35,7 @@ int main()
 
 	cin >> n;
 
-	dp[0] = 0;
-	dp[1] = 1;
-	dp[2] = 1;
+	fill(&dp[0], &dp[0] + 1000010, 0);
 
-	for (int i = 3; i <= 90; i++) {
-		dp[i] = dp[i - 1] + dp[i - 2];
-	}
-
-	cout << dp[n];
+	cout << go(n);
 }
