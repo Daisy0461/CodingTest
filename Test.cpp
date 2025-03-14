@@ -1,22 +1,11 @@
- #include <bits/stdc++.h>
-
-typedef long long ll;
+#include <bits/stdc++.h>
 
 using namespace std;
 
-int n;		//2xn 크기의 타일이 주어진다. 1<= n < = 1000
-ll dp[1010];
-
-ll go(int num)
-{
-	if (num == 1) return 1;
-	if (num == 2) return 2;
-
-	ll & ret = dp[num];
-	if (ret != 0) return ret;
-
-	return ret = (go(num - 1) + go(num - 2) ) % 10007;
-}
+int n, num, len = 0;
+int nums[1005];
+pair<int, int>	tempMax;		// 지금까지의 최대 stack, 
+int dp[1005];
 
 int main()
 {
@@ -24,13 +13,25 @@ int main()
 	cin.tie(0); cout.tie(0);
 
 	cin >> n;
+	
+	for (int i = 0; i < n; i++) {
+		cin >> nums[i];
+	}
 
-	//dp[1] = 1;
-	//dp[2] = 2;
+	for (int i = 0; i < n; i++) {
+		dp[i] = 1;
 
-	//for (int i = 3; i <= n; i++) {
-	//	dp[i] = (dp[i - 1] + dp[i - 2]) % 10007;
-	//}
+		for (int j = 0; j <= i; j++) {
+			if (nums[i] < nums[j] && dp[i] <= dp[j]) {		//현재 숫자가 이전의 숫자보다 작다. & 
+				dp[i] = dp[j] + 1;
+			}
+		}
+	}
 
-	cout << go(n);
+	int result = 1;
+	for (int i = 0; i < n; i++) {
+		result = max(dp[i], result);
+	}
+
+	cout << result;
 }
