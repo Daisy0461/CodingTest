@@ -2,10 +2,10 @@
 
 using namespace std;
 
-int n;		//1<=n <= 1000
+int n, num;
 int result = 0;
-int arr[1010];
-int dp[1010];
+int dp[1500010];
+
 
 int main()
 {
@@ -14,20 +14,19 @@ int main()
 
 	cin >> n;
 
+	int day, pay;
+	int cur = 0;
 	for (int i = 0; i < n; i++) {
-		cin >> arr[i];
+		cin >> day >> pay;
+
+		cur = max(cur, dp[i]);			//이전에 있던 dp값들과 현재 dp값 중 가장 높은 값을 cur에 넣는다.
+
+		if (i + day > n) continue;
+
+		dp[i + day] = max(dp[i + day], cur + pay);			//원래 i+day에 있던 dp와 기존dp 중 가장 높은 값 + pay와 비교한다.
+		result = max(result, dp[i + day]);
 	}
 
-	for (int i = 0; i < n; i++) {
-		dp[i] = 1;
-		for (int j = 0; j < i; j++) {
-			if (arr[i] < arr[j] && dp[i] <= dp[j]) {		//현재 숫자보다 j가 크면서 쌓인게 더 크다면
-				dp[i] = dp[j] + 1;
-			}
-		}
-
-		result = max(result, dp[i]);
-	}
-	
 	cout << result;
 }
+
