@@ -5,7 +5,7 @@ using namespace std;
 int n, m;
 int arr[501][501];
 int dp[501][501];
-int dy[] = { -1, 0, 1, 0 };
+int dy[] = { -1, 0, 1, 0 }; 
 int dx[] = { 0, 1, 0, -1 };
 
 int dfs(int y, int x)
