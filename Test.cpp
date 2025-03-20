@@ -1,49 +1,34 @@
 #include <bits/stdc++.h>
-
 using namespace std;
 
-int n, m;
-int arr[501][501];
-int dp[501][501];
-int dy[] = { -1, 0, 1, 0 }; 
-int dx[] = { 0, 1, 0, -1 };
+int n;
+pair<int, int> h[510];
+int dp[510][510];
 
-int dfs(int y, int x)
-{
-	if (y == n - 1 && x == m - 1) {
-		return 1;
-	}
-	if (dp[y][x] != -1) return dp[y][x];		//이미 값이 존재한다면 그냥 return
-	
-	dp[y][x] = 0;
-	for (int i = 0; i < 4; i++) {
-		int ny = y + dy[i];
-		int nx = x + dx[i];
+int main() {
+      ios_base::sync_with_stdio(false);
+      cin.tie(nullptr);
 
-		if (ny < 0 || ny >= n || nx < 0 || nx >= m) continue;
-		if (arr[y][x] <= arr[ny][nx]) continue;		//현재 칸이 더 작지 않다면 continue한다.
+      cin >> n;
+      for (int i = 1; i <= n; i++) {
+            cin >> h[i].first >> h[i].second;
+      }
 
-		dp[y][x] += dfs(ny, nx);		//즉, 4방향 중 가능한 ny, nx로  dfs를 돌리며 값을 더한다.
-	}
+      // DP: dp[i][j] = i번째 행렬부터 j번째 행렬까지 곱할 때 최소 연산 횟수
+      for (int length = 1; length <= n; length++) {  // 부분 문제의 길이
+            for (int i = 1; i <= n - length + 1; i++) {           //시작 부분.
 
-	return dp[y][x];		//4방향으로 돌려서 얻은 값을 return한다.
+                  int j = i + length;                    //i부터 어디까지 곱의 최소값을 구할 것인가?
+                  dp[i][j] = INT_MAX;                    //문제에 맞게 Int 최대값을 넣음.
+
+                  for (int k = i; k < j; k++) {
+                        int cost = dp[i][k] + dp[k + 1][j]
+                              + h[i].first * h[k].second * h[j].second;
+                        dp[i][j] = min(dp[i][j], cost);
+                  }
+            }
+      }
+
+      cout << dp[1][n] << "\n";
+      return 0;
 }
-
-int main()
-{
-	ios_base::sync_with_stdio(0);
-	cin.tie(0); cout.tie(0);
-
-	cin >> n >> m;
-
-	fill(&dp[0][0], &dp[0][0] + 501 * 501, -1);
-
-	for (int i = 0; i < n; i++) {
-		for (int j = 0; j < m; j++) {
-			cin >> arr[i][j];
-		}
-	}
-
-	cout << dfs(0, 0);
-}
-
