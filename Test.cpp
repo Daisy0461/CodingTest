@@ -1,26 +1,41 @@
 #include <bits/stdc++.h>
+
 using namespace std;
 
+struct HomeStruct
+{
+	int r=0; int g=0; int b=0;
+};
+
+//주변 집(-1, + 1)의 색과 같지 않아야한다.
 int n;
-pair<int, int> arr[510];
-int dp[510][510];
+HomeStruct arr[1010];
+int dp[1010][3];
 
-int main() {
+int main()
+{
+	ios_base::sync_with_stdio(0);
+	cin.tie(0); cout.tie(0);
+
 	cin >> n;
+
+	int r, g, b;
 	for (int i = 1; i <= n; i++) {
-		cin >> arr[i].first >> arr[i].second;
+		cin >> r >> g >> b;
+		arr[i].r = r;
+		arr[i].g = g;
+		arr[i].b = b;
+
+		//첫 색깔을 칠했을 때의 최소값.
+		dp[i][0] = min(dp[i - 1][1] + r, dp[i - 1][2] + r);
+		dp[i][1] = min(dp[i - 1][0] + g, dp[i - 1][2] + g);
+		dp[i][2] = min(dp[i - 1][0] + b, dp[i - 1][1] + b);
 	}
 
-	for (int len = 1; len < n; len++) {
-		for (int start = 1; start + len <= n; start++) {
-			int end = len + start;
-			dp[start][end] = INT_MAX;
-			for (int mid = start; mid < end; mid++) {
-				int cost = dp[start][mid] + dp[mid + 1][end] + (arr[start].first * arr[mid].second * arr[end].second);
-				dp[start][end] = min(dp[start][end], cost);
-			}
-		}
+	int result=1e9;
+	for (int i = 0; i < 3; i++) {
+		result = min(result, dp[n][i]);
 	}
 
-	cout << dp[1][n] << "\n";
+	cout << result;
 }
