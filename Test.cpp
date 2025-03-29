@@ -2,15 +2,12 @@
 
 using namespace std;
 
-struct HomeStruct
-{
-	int r=0; int g=0; int b=0;
-};
-
-//주변 집(-1, + 1)의 색과 같지 않아야한다.
 int n;
-HomeStruct arr[1010];
-int dp[1010][3];
+
+//현재 층에서 선택된 수의 대각선 왼쪽 또는 대각선 오른쪽에 있는 것 중에서만 선택할 수 있다.
+// = arr로 봤을 땐 i or i+1 이다.
+int arr[510][510];
+int dp[510][510];
 
 int main()
 {
@@ -19,23 +16,27 @@ int main()
 
 	cin >> n;
 
-	int r, g, b;
 	for (int i = 1; i <= n; i++) {
-		cin >> r >> g >> b;
-		arr[i].r = r;
-		arr[i].g = g;
-		arr[i].b = b;
-
-		//첫 색깔을 칠했을 때의 최소값.
-		dp[i][0] = min(dp[i - 1][1] + r, dp[i - 1][2] + r);
-		dp[i][1] = min(dp[i - 1][0] + g, dp[i - 1][2] + g);
-		dp[i][2] = min(dp[i - 1][0] + b, dp[i - 1][1] + b);
+		for (int j = 1; j <= i; j++) {
+			cin >> arr[i][j];
+		}
 	}
 
-	int result=1e9;
-	for (int i = 0; i < 3; i++) {
-		result = min(result, dp[n][i]);
+	dp[1][1] = arr[1][1];
+
+	for (int i = 1; i <= n-1; i++) {		//층을 나타낸다. (위에서 부터)
+		for (int j = 1; j <= i; j++) {
+			dp[i + 1][j] = max(dp[i + 1][j], dp[i][j] + arr[i + 1][j]);
+			dp[i + 1][j + 1] = max(dp[i + 1][j + 1], dp[i][j] + arr[i + 1][j + 1]);
+		}
+	}
+
+
+	int result = -1e9;
+	for (int i = 1; i <= n; i++) {
+		result = max(result, dp[n][i]);
 	}
 
 	cout << result;
+
 }
