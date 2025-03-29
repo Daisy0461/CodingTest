@@ -1,13 +1,13 @@
 #include <bits/stdc++.h>
 
 using namespace std;
+typedef long long ll;
+
+//길이가 n인 계단수 ->  n=2인 경우 10,12,21,23,32,34,43,45,54,56 // 65,67,78,76,87,89,98 // 1의 경우 1,2,3,4,5,6,7,8,9 이런 느낌 ㅇㅇ
 
 int n;
-
-//현재 층에서 선택된 수의 대각선 왼쪽 또는 대각선 오른쪽에 있는 것 중에서만 선택할 수 있다.
-// = arr로 봤을 땐 i or i+1 이다.
-int arr[510][510];
-int dp[510][510];
+int divNum = 1e9;
+int dp[110][10];
 
 int main()
 {
@@ -15,28 +15,22 @@ int main()
 	cin.tie(0); cout.tie(0);
 
 	cin >> n;
+	dp[1][0] = 0;
+	for (int i = 1; i <= 9; i++) {
+		dp[1][i] = 1;
+	}
 
-	for (int i = 1; i <= n; i++) {
-		for (int j = 1; j <= i; j++) {
-			cin >> arr[i][j];
+	for (int i = 1; i < n; i++) {
+		for (int j = 0; j < 10; j++) {
+			if (j - 1 >= 0) dp[i + 1][j - 1] = (dp[i + 1][j - 1] + dp[i][j]) % divNum;
+			if (j + 1 <= 9) dp[i + 1][j + 1] = (dp[i + 1][j + 1] + dp[i][j]) % divNum;
 		}
 	}
 
-	dp[1][1] = arr[1][1];
-
-	for (int i = 1; i <= n-1; i++) {		//층을 나타낸다. (위에서 부터)
-		for (int j = 1; j <= i; j++) {
-			dp[i + 1][j] = max(dp[i + 1][j], dp[i][j] + arr[i + 1][j]);
-			dp[i + 1][j + 1] = max(dp[i + 1][j + 1], dp[i][j] + arr[i + 1][j + 1]);
-		}
-	}
-
-
-	int result = -1e9;
-	for (int i = 1; i <= n; i++) {
-		result = max(result, dp[n][i]);
+	ll result = 0;
+	for (int i = 0; i <= 9; i++) {
+		result = (result + dp[n][i]) % divNum;
 	}
 
 	cout << result;
-
 }
