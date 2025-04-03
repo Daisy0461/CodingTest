@@ -1,50 +1,32 @@
 #include <bits/stdc++.h>
+
 using namespace std;
-typedef long long ll;
 
-int n;
-int arr[1010];
-int dp[1010][2];           //first = index, second [0] = 현재 위치가 가장 낮은 지점일 때의 수, [1] = 현재가 가장 높은 지점일 떄의 수.
+string s1, s2;
+int dp[1010][1010];
 
-int main() {
-      ios_base::sync_with_stdio(0);
-      cin.tie(0); cout.tie(0);
+int main()
+{
+	ios_base::sync_with_stdio(0);
+	cin.tie(0); cout.tie(0);
 
-      fill(&dp[0][0], &dp[0][0] + 1010 * 2, 1);
+	cin >> s1 >> s2;
 
-      cin >> n;
-      for (int i = 1; i <= n; i++) {
-            cin >> arr[i];
-      }
+	for (int i = 1; i <= s1.length(); i++) {
+		for (int j = 1; j <= s2.length(); j++) {
+			if (s1[i - 1] == s2[j - 1]) {			//s1 i-1번째 문자와 s2의 j-1번째의 문자가 동일하다.
+				//이전에 있던 문자열의 길이 -> 현재 문자열(i)비교 전(i-1)에 이전 번째 dp(가장 긴 문자열)의 +1을 한다.
+				//왜냐면 지금 문자열이 똑같으니까 길이가 +1 되는 것이다.
+				dp[i][j] = dp[i - 1][j - 1] + 1;	
+			}
+			else {
+				//여긴 이전에 문자열 길이에서 최장 길이를 찾아서 넣어야한다.
+				//i-1,j => 이전 문자열을 비교할 때의 문자열 최장 길이.
+				//i, j-1 => 현재 문자열을 비교할 때 문자열 최장 길이. -> 더 길게 만들 수 있는 경우가 있을 수 있음.
+				dp[i][j] = max(dp[i - 1][j], dp[i][j - 1]);
+			}
+		}
+	}
 
-      //cout << "\n";
-      int result = 1;
-      for (int i = 1; i <= n; i++) {
-            int nowNum = arr[i];
-            //cout << "arr[i] : " << arr[i] << "\n";
-
-            for (int j = i-1; j > 0; j--) {           //자신보다 이전에 나온 것들을 돈다.
-                  //cout << "arr[j] : " << arr[j];
-                  if (nowNum < arr[j]) {        //현재 숫자보다 큰 값을 만났다.
-                        //일단 지금까지의 최대값인지 정해야한다.
-                        //cout << "  in arr[i] < arr[j]\n";
-                        dp[i][0] = max(dp[i][0], dp[j][1] + 1);
-                        dp[i][0] = max(dp[i][0], dp[j][0] + 1);
-                  }
-                  else if (nowNum > arr[j]) {
-                        //cout << "  in arr[i] > arr[j]\n";
-                        dp[i][1] = max(dp[i][1], dp[j][1] + 1);
-                  }
-                  else {
-                        //cout << "  Same\n";
-                  }
-            }
-
-            //cout << "i : " << i;
-            result = max({ result, dp[i][0], dp[i][1] });
-            //cout << "  dp[i][0] : " << dp[i][0] << "  dp[i][1] : " << dp[i][1] << "\n\n";
-       }
-
-      //cout << "result : ";
-      cout << result;
+	cout << dp[s1.length()][s2.length()];
 }
