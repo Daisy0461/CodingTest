@@ -19,7 +19,52 @@ int main()
 		stufs.push_back({ w, v });
 	}
 
-	int result = 0;
+	int result = 0;#include <bits/stdc++.h>
+
+using namespace std;
+
+int n, m;
+int arr[510][510];
+int dp[510][510];
+int dy[] = { -1, 0, 1, 0 };
+int dx[] = { 0, 1, 0, -1 };		//위, 오, 아, 왼
+
+int dfs(int y, int x) 
+{
+	if (y == n - 1 && x == m - 1) return 1;
+	if (dp[y][x] != -1)  return dp[y][x];
+
+	dp[y][x] = 0;
+	for (int i = 0; i < 4; i++) {
+		int ny = y + dy[i];
+		int nx = x + dx[i];
+
+		if (ny < 0 || nx < 0 || ny >= n || nx >= m) continue;
+		if (arr[y][x] <= arr[ny][nx]) continue;		//다음 칸이 더 크거나 같다. 즉 낮지 않다.
+
+		dp[y][x] += dfs(ny, nx);
+	}
+
+	return dp[y][x];
+}
+
+int main()
+{
+	ios_base::sync_with_stdio(0);
+	cin.tie(0); cout.tie(0);
+
+	fill(&dp[0][0], &dp[0][0] + 510 * 510, -1);
+
+	cin >> n >> m;
+
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < m; j++) {
+			cin >> arr[i][j];
+		}
+	}
+
+	cout << dfs(0, 0);
+}
 	for (int i = 0; i < n; i++) {
 		int nowWegiht = stufs[i].first;
 		int nowValue = stufs[i].second;
