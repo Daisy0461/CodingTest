@@ -1,6 +1,6 @@
 #include <bits/stdc++.h>
 
-using namespace std;
+using namespace std; 
 
 int n, k;
 int dp[100010];		//해당 무게가 남았을 때 최대 Value
