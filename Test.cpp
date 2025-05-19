@@ -12,7 +12,7 @@ int main()
 	cin.tie(0); cout.tie(0);
 
 	cin >> n >> k;
-
+ 
 	int w, v;
 	for (int i = 0; i < n; i++) {
 		cin >> w >> v;
